@@ -1,0 +1,1 @@
+console.log("%cMAP for GhostRun2 loaded.", "color: #888");

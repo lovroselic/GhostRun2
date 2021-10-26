@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>GhostRun II</title>
+    <link rel="stylesheet" href="./GR2_style.css">
+
+</head>
+
+<body>
+    <!-- body -->
+    <div id="preload" class="hidden"></div>
+    <div class="win" id="setup">
+        <div id="load">
+        </div>
+        <div id="SC"></div>
+        <h1 id="title"></h1>
+        <p>
+            #gametext
+        </p>
+
+        <div id="debug">
+            <div class="setup_container smallsection" id="selector">
+                <fieldset>
+                    <legend>
+                        Settings:
+                    </legend>
+                    ENGINE.INI.GRIDPIX:
+                    <input name="gridsize" id="gridsize" type="text" size="2" maxlength="2" value="32" disabled="true">
+                    <br />
+                    CAMERA.FOV:
+                    <input name="fov" id="fov" type="text" size="2" maxlength="2" value="70" disabled="true">
+                    <br /><br />
+                </fieldset>
+                <fieldset>
+                    <legend>
+                        Version:
+                    </legend>
+                    ENGINE: <span id="engine_version"></span><br>
+                    GRID: <span id="grid_version"></span><br>
+                    MAZE: <span id="maze_version"></span><br>
+                    RAYCAST: <span id="raycast_version"></span><br>
+                    AI: <span id="ai_version"></span><br>
+                    Prototype LIB: <span id="lib_version"></span><br>
+
+                </fieldset>
+            </div>
+            <div class="setup_container smallsection">
+                <fieldset>
+                    <legend>
+                        Resolution:
+                    </legend>
+                    ScreenWidth: <span id="screen_width"></span><br>
+                    ScreenHeight: <span id="screen_height"></span><br>
+
+                </fieldset>
+
+            </div>
+            <div>
+                <div class="setup_container smallsection">
+                    <fieldset>
+                        <legend>
+                            Walls:
+                        </legend>
+                        <select id="walltexture">
+                        </select>
+                        <br />
+                        <br />
+                        <div class="bordered"><canvas id="wallcanvas" width="240" height="60"></canvas></div>
+                    </fieldset>
+                </div>
+                <div class="setup_container smallsection">
+                    <fieldset>
+                        <legend>
+                            Floor:
+                        </legend>
+                        <select id="floortexture">
+                        </select>
+                        <br />
+                        <br />
+                        <div class="bordered"><canvas id="floorcanvas" width="240" height="60"></canvas></div>
+                    </fieldset>
+                </div>
+                <div class="setup_container smallsection">
+                    <fieldset>
+                        <legend>
+                            Ceiling:
+                        </legend>
+                        <select id="ceilingtexture">
+                        </select>
+                        <br />
+                        <br />
+                        <div class="bordered"><canvas id="ceilingcanvas" width="240" height="60"></canvas></div>
+                    </fieldset>
+                </div>
+            </div>
+        </div>
+
+        <p class="cb" id="buttons">
+            <input type='button' id='pause' value='Pause Game [F4]' disabled="disabled">
+            <input type='button' id='toggleHelp' value='Show/Hide Instructions'>
+            <input type='button' id='toggleAbout' value='About'>
+        </p>
+        <div id="help" class="section">
+            <fieldset>
+                <legend>
+                    Instructions:
+                </legend>
+
+            </fieldset>
+        </div>
+
+        <!--<p class="cb" id="buttons_below"></p>-->
+
+        <p class="version cb" id="version"></p>
+    </div>
+
+    <div id="game" class="winTrans"></div>
+    <div id="bottom" class="cb" style="margin-top: 720px"></div>
+    <div id="temp" class="hidden"></div>
+    <div id="temp2" class="hidden"></div>
+    <!-- JS -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"
+        integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+    <script src='./Prototype_LIB_3_00.js'></script>
+    <script src='./ENGINE_3_00.js'></script>
+    <script src='./GRID_3_00.js'></script>
+    <script src='./AI_1_00.js'></script>
+    <script src='./MAZE_3_00.js'></script>
+    <script src='./assets_GhostRun2.js'></script>-
+    <script src='./MAP_GhostRun2.js'></script>
+    <script src="./GhostRun2.js"></script>
+
+</body>
+
+</html>
