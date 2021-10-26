@@ -23,7 +23,7 @@ var DEBUG = {
 };
 var INI = {};
 var PRG = {
-    VERSION: "0.00",
+    VERSION: "0.00.01",
     NAME: "GhostRun II",
     YEAR: "2021",
     CSS: "color: #239AFF;",
@@ -82,6 +82,60 @@ var PRG = {
         $("#toggleAbout").click(function () {
             $("#about").toggle(400);
         });
+
+        //boxes
+        ENGINE.gameWIDTH = 768;
+      ENGINE.sideWIDTH = 960 - ENGINE.gameWIDTH;
+      ENGINE.gameHEIGHT = 768;
+      ENGINE.titleHEIGHT = 80;
+      ENGINE.titleWIDTH = 960;
+      ENGINE.bottomHEIGHT = 40;
+      ENGINE.bottomWIDTH = 960;
+      ENGINE.checkProximity = false;
+      ENGINE.checkIntersection = false;
+      ENGINE.setCollisionsafe(49);
+      $("#bottom").css(
+        "margin-top",
+        ENGINE.gameHEIGHT + ENGINE.titleHEIGHT + ENGINE.bottomHEIGHT
+      );
+      $(ENGINE.gameWindowId).width(ENGINE.gameWIDTH + ENGINE.sideWIDTH + 4);
+      ENGINE.addBOX(
+        "TITLE",
+        ENGINE.titleWIDTH,
+        ENGINE.titleHEIGHT,
+        ["title"],
+        null
+      );
+      ENGINE.addBOX(
+        "ROOM",
+        ENGINE.gameWIDTH,
+        ENGINE.gameHEIGHT,
+        ["background", "splash", "actors", "explosion", "text", "animation","button", "click"],
+        "side"
+      );
+      ENGINE.addBOX(
+        "SIDE",
+        ENGINE.sideWIDTH,
+        ENGINE.gameHEIGHT,
+        ["sideback", "score", "energy", "lives", "stage", "radar"],
+        "fside"
+      );
+      ENGINE.addBOX(
+        "DOWN",
+        ENGINE.bottomWIDTH,
+        ENGINE.bottomHEIGHT,
+        ["bottom", "bottomText"],
+        null
+      );
+
+      ENGINE.addBOX(
+        "LEVEL",
+        ENGINE.gameWIDTH,
+        ENGINE.gameHEIGHT,
+        ["floor", "wall", "coord", "gold"],
+        null
+      );
+      //$("#LEVEL").addClass("hidden");
     },
     start() {
         console.log(PRG.NAME + " started.");

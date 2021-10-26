@@ -85,7 +85,7 @@ var LoadAudio = [
     { srcName: "UseScroll.mp3", name: "Splash" },
     { srcName: "Temple.mp3", name: "ClearLevel" },
     { srcName: "Evil laughter.mp3", name: "EvilLaughter" },
-    { srcName: "Determination - LaughingSkull.mp3", name: "Title" }
+    //{ srcName: "Determination - LaughingSkull.mp3", name: "Title" }
 ];
 var ExtendSheetTag = [];
 var LoadSheetSequences = [];
