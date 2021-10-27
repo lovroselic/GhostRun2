@@ -30,7 +30,7 @@ var DownRight = new Vector(1, 1);
 var DownLeft = new Vector(-1, 1);
 
 var ENGINE = {
-  VERSION: "3.00",
+  VERSION: "3.01.DEV",
   CSS: "color: #0FA",
   INI: {
     ANIMATION_INTERVAL: 16,
@@ -1009,13 +1009,14 @@ var ENGINE = {
         return;
       }
     },
-    start() {
+    start(interval) {
       $("#bottom")[0].scrollIntoView();
       ENGINE.GAME.stopAnimation = false;
       ENGINE.GAME.started = Date.now();
       ENGINE.GAME.frame = {};
       ENGINE.GAME.frame.start = null;
       ENGINE.KEY.on();
+      ENGINE.INI.ANIMATION_INTERVAL = interval;
     },
     ANIMATION: {
       start(wrapper) {

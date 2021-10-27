@@ -24,17 +24,6 @@
             <div class="setup_container smallsection" id="selector">
                 <fieldset>
                     <legend>
-                        Settings:
-                    </legend>
-                    ENGINE.INI.GRIDPIX:
-                    <input name="gridsize" id="gridsize" type="text" size="2" maxlength="2" value="32" disabled="true">
-                    <br />
-                    CAMERA.FOV:
-                    <input name="fov" id="fov" type="text" size="2" maxlength="2" value="70" disabled="true">
-                    <br /><br />
-                </fieldset>
-                <fieldset>
-                    <legend>
                         Version:
                     </legend>
                     ENGINE: <span id="engine_version"></span><br>
@@ -45,17 +34,6 @@
                     Prototype LIB: <span id="lib_version"></span><br>
 
                 </fieldset>
-            </div>
-            <div class="setup_container smallsection">
-                <fieldset>
-                    <legend>
-                        Resolution:
-                    </legend>
-                    ScreenWidth: <span id="screen_width"></span><br>
-                    ScreenHeight: <span id="screen_height"></span><br>
-
-                </fieldset>
-
             </div>
             <div>
                 <div class="setup_container smallsection">
@@ -82,18 +60,6 @@
                         <div class="bordered"><canvas id="floorcanvas" width="240" height="60"></canvas></div>
                     </fieldset>
                 </div>
-                <div class="setup_container smallsection">
-                    <fieldset>
-                        <legend>
-                            Ceiling:
-                        </legend>
-                        <select id="ceilingtexture">
-                        </select>
-                        <br />
-                        <br />
-                        <div class="bordered"><canvas id="ceilingcanvas" width="240" height="60"></canvas></div>
-                    </fieldset>
-                </div>
             </div>
         </div>
 
@@ -110,6 +76,24 @@
 
             </fieldset>
         </div>
+        <div id="about" class="section">
+            <fieldset>
+                <legend>
+                    About:
+                </legend>
+                <image src="https://www.c64-wiki.com/images/7/7f/Radar_Rat_Race_Start.png" alt="Radar Rat Race"
+                    class="fl pic" title="Radar Rat Race">
+                    <p> GhostRun is a clone of <a href="https://www.c64-wiki.com/wiki/Radar_Rat_Race"
+                            target="_blank">Radar Rat Race</a>, released in 1982 for Commodore VIC-20 and C64. It was
+                        the very first game I every played on my C64. It was hard and frantic and I
+                        kind of hated it. </p>
+                    <p>In this clone I wanted to keep most of the features of the original intact. The main goal was to
+                        design a distinct personalities for antagonists.</p>
+                    <p>Source of graphics are various free resource sites. No copyrighted images were intendedly used in
+                        the making of the game. Code is written in JavaScript using JQuery framework.</p>
+                    <p>Version II ...</p>
+            </fieldset>
+        </div>
 
         <!--<p class="cb" id="buttons_below"></p>-->
 
@@ -124,7 +108,7 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"
         integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
     <script src='./Prototype_LIB_3_00.js'></script>
-    <script src='./ENGINE_3_00.js'></script>
+    <script src='./ENGINE_.js'></script>
     <script src='./GRID_3_00.js'></script>
     <script src='./AI_1_00.js'></script>
     <script src='./MAZE_3_00.js'></script>

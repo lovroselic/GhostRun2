@@ -2,56 +2,14 @@
 console.log("Assets for GhostRun2 ready.");
 
 var LoadTextures = [
-    "BrickWall.jpg",
-    "BrickWall2.jpg",
-    "BrickWall3.jpg",
-    "BrickWall4.jpg",
-    "BrickWall5.jpg",
-    "BrickWall6.jpg",
-    "BrickWall7.jpg",
-    "BrokenRuin.jpg",
-    "DungeonFloor.jpg",
-    "DungeonFloor2.jpg",
-    "DungeonWall.jpg",
-    "DungeonWall2.jpg",
-    "DungeonWall3.jpg",
-    "Grass.jpg",
-    "MorgueFloor.jpg",
-    "CastleWall.jpg",
-    "OldWall.jpg",
-    "RockFloor.jpg",
-    "SlateWall.jpg",
-    "StoneFloor.jpg",
-    "StoneFloor2.jpg",
-    "StoneFloor3.jpg",
-    "StoneFloor4.jpg",
-    "StoneFloor5.jpg",
-    "StoneWall.jpg",
-    "StoneWall2.jpg",
-    "StoneWall3.jpg",
-    "StoneWall3b.jpg",
-    "StoneWall4.jpg",
-    "StoneWall5.jpg",
-    "ThatchFloor.jpg",
-    "WhiteWall.jpg",
-    "YellowBrick.jpg",
-    "LavaWall.jpg",
-    "LavaWall2.jpg",
-    "TileFloor.jpg",
-    "RockWall.jpg",
-    "TlakFloor.jpg",
-    "TlakFloor2.jpg",
-    "TlakFloor3.jpg",
-    "TlakFloor4.jpg",
-    "TlakFloor2b.jpg",
-    "TlakFloor4b.jpg",
-    "BlackWall.jpg",
-    "BlackWall2.jpg",
-    "WhiteCeramicWall.jpg",
-    "WhiteCeramicWall2.jpg",
-    "BlackBrickWall.jpg",
-    "BlackBrickWall2.jpg",
-    "GhostRun_cover.jpg"
+    "BrickWall.jpg", "BrickWall2.jpg", "BrickWall3.jpg", "BrickWall4.jpg", "BrickWall5.jpg", "BrickWall6.jpg", "BrickWall7.jpg",
+    "BrokenRuin.jpg", "DungeonFloor.jpg", "DungeonFloor2.jpg", "DungeonWall.jpg", "DungeonWall2.jpg", "DungeonWall3.jpg",
+    "Grass.jpg", "MorgueFloor.jpg", "CastleWall.jpg", "OldWall.jpg", "RockFloor.jpg", "SlateWall.jpg", "StoneFloor.jpg",
+    "StoneFloor2.jpg", "StoneFloor3.jpg", "StoneFloor4.jpg", "StoneFloor5.jpg", "StoneWall.jpg", "StoneWall2.jpg", "StoneWall3.jpg",
+    "StoneWall3b.jpg", "StoneWall4.jpg", "StoneWall5.jpg", "ThatchFloor.jpg", "WhiteWall.jpg", "YellowBrick.jpg", "LavaWall.jpg",
+    "LavaWall2.jpg", "TileFloor.jpg", "RockWall.jpg", "TlakFloor.jpg", "TlakFloor2.jpg", "TlakFloor3.jpg", "TlakFloor4.jpg",
+    "TlakFloor2b.jpg", "TlakFloor4b.jpg", "BlackWall.jpg", "BlackWall2.jpg", "WhiteCeramicWall.jpg", "WhiteCeramicWall2.jpg", "BlackBrickWall.jpg",
+    "BlackBrickWall2.jpg", "GhostRun2_cover.jpg"
 ];
 var LoadSprites = [
     { srcName: "goldBarSmall.png", name: "Gold" },
@@ -85,7 +43,7 @@ var LoadAudio = [
     { srcName: "UseScroll.mp3", name: "Splash" },
     { srcName: "Temple.mp3", name: "ClearLevel" },
     { srcName: "Evil laughter.mp3", name: "EvilLaughter" },
-    //{ srcName: "Determination - LaughingSkull.mp3", name: "Title" }
+    { srcName: "Determination - LaughingSkull.mp3", name: "Title" }
 ];
 var ExtendSheetTag = [];
 var LoadSheetSequences = [];
