@@ -20,10 +20,11 @@ var DEBUG = {
     SETTING: true,
     BUTTONS: true,
     VERBOSE: true,
+    _2D_display: true,
 };
 var INI = {};
 var PRG = {
-    VERSION: "0.00.02",
+    VERSION: "0.00.04",
     NAME: "GhostRun II",
     YEAR: "2021",
     CSS: "color: #239AFF;",
@@ -102,7 +103,7 @@ var PRG = {
             "fside");
         ENGINE.addBOX("DOWN", ENGINE.bottomWIDTH, ENGINE.bottomHEIGHT, ["bottom", "bottomText"], null);
 
-        ENGINE.addBOX("LEVEL", ENGINE.gameWIDTH, ENGINE.gameHEIGHT, ["floor", "wall", "coord", "gold"], null);
+        ENGINE.addBOX("LEVEL", ENGINE.gameWIDTH, ENGINE.gameHEIGHT, ["blockgrid", "grid", "coord", "player"], null);
         //$("#LEVEL").addClass("hidden");
     },
     start() {
@@ -144,6 +145,41 @@ var GAME = {
         GAME.prepareForRestart();
         GAME.completed = false;
         GAME.level = 1;
+
+        //debug
+        ENGINE.GAME.ANIMATION.stop();
+        TITLE.clearAllLayers();
+        ENGINE.fillLayer("background", "#000");
+        TITLE.sideBackground();
+        //
+        TITLE.bottom();
+
+        GAME.levelStart();
+
+    },
+    levelStart(){
+        console.log("level",GAME.level,"started");
+        this.initLevel(GAME.level);
+    },
+    initLevel(level){
+        console.log("level",level,"initialized");
+        let randomDungeon = DUNGEON.create(
+            MAP[level].width,
+            MAP[level].height
+          );
+        MAP[level].DUNGEON = randomDungeon;
+        console.log("creating random dungeon", MAP[level].DUNGEON);
+        if (DEBUG._2D_display){
+            GAME.blockGrid(level);
+        }
+    },
+    blockGrid(level){
+        console.log("block grid painted", MAP[level].width * ENGINE.INI.GRIDSIZE);
+        ENGINE.resizeBOX("LEVEL", MAP[level].width * ENGINE.INI.GRIDPIX, MAP[level].height * ENGINE.INI.GRIDPIX);
+        ENGINE.BLOCKGRID.configure("blockgrid", "#FFF", "#000");
+        ENGINE.BLOCKGRID.draw(MAP[level].DUNGEON);
+        GRID.grid();
+        GRID.paintCoord("coord", MAP[level].DUNGEON);
     },
     prepareForRestart() {
         console.log("preparing game for start or safe restart ...");
@@ -173,6 +209,21 @@ var GAME = {
 
         $("#buttons").prepend("<input type='button' id='startGame' value='Start Game'>");
         $("#startGame").prop("disabled", true);
+
+        //MAZE, DUNGEON recheck
+        MAZE.connectSome = true;
+        MAZE.leaveDeadEnds = 4;
+        MAZE.connectDeadEnds = false;
+        MAZE.polishDeadEnds = true;
+        MAZE.addConnections = false;
+        MAZE.targetDensity = 0.6;
+        MAZE.bias = 2;
+        MAZE.useBias = true;
+        DUNGEON.MIN_ROOM = 4;
+        DUNGEON.MAX_ROOM = 6;
+        DUNGEON.MIN_PADDING = 2;
+        DUNGEON.ITERATIONS = 4;
+        DUNGEON.CONFIGURE = false;
 
     },
     setTitle: function () {
@@ -244,11 +295,11 @@ var TITLE = {
         ENGINE.topCanvas = ENGINE.getCanvasName("ROOM");
         TITLE.drawButtons();
         GAME.setTitle();
-        ENGINE.GAME.start(); //INIT game loop
+        ENGINE.GAME.start(16); //INIT game loop
         ENGINE.GAME.ANIMATION.next(GAME.runTitle);
     },
     clearAllLayers() {
-        ENGINE.layersToClear = new Set(["text", "animation", "actors", "explosion", "sideback"]);
+        ENGINE.layersToClear = new Set(["text", "animation", "actors", "explosion", "sideback", "background","button"]);
         ENGINE.clearLayerStack();
     },
     blackBackgrounds() {
@@ -274,8 +325,13 @@ var TITLE = {
     sideBackground() {
         ENGINE.fillLayer("sideback", "#000");
     },
+    bottom(){
+
+        this.bottomVersion();
+    },
     bottomVersion() {
-        let CTX = LAYER.bottom;
+        ENGINE.clearLayer("bottomText");
+        let CTX = LAYER.bottomText;
         CTX.textAlign = "center";
         var x = ENGINE.bottomWIDTH / 2;
         var y = ENGINE.bottomHEIGHT / 2;

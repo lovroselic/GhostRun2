@@ -5,7 +5,7 @@
 "use strict";
 
 //////////////////////////////////////
-// GRID v 3.00.DEV   by LS          //
+// GRID v 3.01.DEV   by LS          //
 //////////////////////////////////////
 
 /*
@@ -16,7 +16,7 @@ known bugs:
 */
 
 var GRID = {
-  VERSION: "3.00",
+  VERSION: "3.01",
   CSS: "color: #0AA",
   SETTING: {
     ALLOW_CROSS: false,
@@ -60,7 +60,6 @@ var GRID = {
     return new Grid(tx, ty);
   },
   grid(CTX = LAYER.grid) {
-    //potentially obsolete
     var x = 0;
     var y = 0;
     CTX.strokeStyle = "#AAA";
@@ -85,6 +84,19 @@ var GRID = {
       CTX.closePath();
       CTX.stroke();
     } while (x <= CTX.canvas.width);
+  },
+  paintCoord(layer, dungeon) {
+    ENGINE.clearLayer(layer);
+    for (let x = 0; x < dungeon.width; x++) {
+      for (let y = 0; y < dungeon.height; y++) {
+        let grid = new Grid(x, y);
+        if (!dungeon.GA.check(grid, MAPDICT.WALL)) {
+          let point = GRID.gridToCoord(grid);
+          let text = `${x},${y}`;
+          GRID.paintText(point, text, layer, "#BBB");
+        }
+      }
+    }
   },
   paintText(point, text, layer, color = "#FFF") {
     //check usage, obsolete?
