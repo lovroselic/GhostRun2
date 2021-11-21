@@ -24,7 +24,7 @@ var DEBUG = {
 };
 var INI = {};
 var PRG = {
-    VERSION: "0.00.04",
+    VERSION: "0.00.05",
     NAME: "GhostRun II",
     YEAR: "2021",
     CSS: "color: #239AFF;",
@@ -157,24 +157,21 @@ var GAME = {
         GAME.levelStart();
 
     },
-    levelStart(){
-        console.log("level",GAME.level,"started");
+    levelStart() {
+        console.log("level", GAME.level, "started");
         this.initLevel(GAME.level);
     },
-    initLevel(level){
-        console.log("level",level,"initialized");
-        let randomDungeon = DUNGEON.create(
-            MAP[level].width,
-            MAP[level].height
-          );
+    initLevel(level) {
+        console.log("level", level, "initialized");
+        let randomDungeon = RAT_ARENA.create(MAP[level].width, MAP[level].height);
         MAP[level].DUNGEON = randomDungeon;
         console.log("creating random dungeon", MAP[level].DUNGEON);
-        if (DEBUG._2D_display){
+        if (DEBUG._2D_display) {
             GAME.blockGrid(level);
         }
     },
-    blockGrid(level){
-        console.log("block grid painted", MAP[level].width * ENGINE.INI.GRIDSIZE);
+    blockGrid(level) {
+        console.log("block grid painted");
         ENGINE.resizeBOX("LEVEL", MAP[level].width * ENGINE.INI.GRIDPIX, MAP[level].height * ENGINE.INI.GRIDPIX);
         ENGINE.BLOCKGRID.configure("blockgrid", "#FFF", "#000");
         ENGINE.BLOCKGRID.draw(MAP[level].DUNGEON);
@@ -211,19 +208,18 @@ var GAME = {
         $("#startGame").prop("disabled", true);
 
         //MAZE, DUNGEON recheck
+        /*   
         MAZE.connectSome = true;
         MAZE.leaveDeadEnds = 4;
         MAZE.connectDeadEnds = false;
         MAZE.polishDeadEnds = true;
         MAZE.addConnections = false;
-        MAZE.targetDensity = 0.6;
+        MAZE.targetDensity = 0.6; 
+        */
         MAZE.bias = 2;
         MAZE.useBias = true;
-        DUNGEON.MIN_ROOM = 4;
-        DUNGEON.MAX_ROOM = 6;
-        DUNGEON.MIN_PADDING = 2;
-        DUNGEON.ITERATIONS = 4;
-        DUNGEON.CONFIGURE = false;
+        
+        //DUNGEON.CONFIGURE = false;
 
     },
     setTitle: function () {
@@ -299,7 +295,7 @@ var TITLE = {
         ENGINE.GAME.ANIMATION.next(GAME.runTitle);
     },
     clearAllLayers() {
-        ENGINE.layersToClear = new Set(["text", "animation", "actors", "explosion", "sideback", "background","button"]);
+        ENGINE.layersToClear = new Set(["text", "animation", "actors", "explosion", "sideback", "background", "button"]);
         ENGINE.clearLayerStack();
     },
     blackBackgrounds() {
@@ -325,7 +321,7 @@ var TITLE = {
     sideBackground() {
         ENGINE.fillLayer("sideback", "#000");
     },
-    bottom(){
+    bottom() {
 
         this.bottomVersion();
     },
