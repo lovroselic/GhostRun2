@@ -24,7 +24,7 @@ var DEBUG = {
 };
 var INI = {};
 var PRG = {
-    VERSION: "0.00.05",
+    VERSION: "0.01.00",
     NAME: "GhostRun II",
     YEAR: "2021",
     CSS: "color: #239AFF;",
@@ -207,19 +207,9 @@ var GAME = {
         $("#buttons").prepend("<input type='button' id='startGame' value='Start Game'>");
         $("#startGame").prop("disabled", true);
 
-        //MAZE, DUNGEON recheck
-        /*   
-        MAZE.connectSome = true;
-        MAZE.leaveDeadEnds = 4;
-        MAZE.connectDeadEnds = false;
-        MAZE.polishDeadEnds = true;
-        MAZE.addConnections = false;
-        MAZE.targetDensity = 0.6; 
-        */
         MAZE.bias = 2;
         MAZE.useBias = true;
         
-        //DUNGEON.CONFIGURE = false;
 
     },
     setTitle: function () {

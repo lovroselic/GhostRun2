@@ -7,7 +7,7 @@
 ///////////////////////Dungeon.js///////////////
 //                                            //
 //        Procedureal maze and dungeon        //
-//             generation: 3.00               //
+//             generation: 3.01               //
 //                                            //
 //    dependencies: Prototype LS, ENGINE      //
 ////////////////////////////////////////////////
@@ -581,20 +581,29 @@ class MasterDungeon {
             if (this.GA.isWall(bridge)) {
                 let test = bridge.add(ENGINE.directions[z]);
                 if (this.GA.isEmpty(test)) {
-                    let connections = this.hasConnections(bridge);      //sounds like overkill : recheck!!!
-                    if (connections === 2 && !this.isInAnyRoom(test)) {
+                    let connections = this.hasConnections(bridge);
+                    /*if (connections === 2 && !this.isInAnyRoom(test)) {
                         possible.push(bridge);
+                    }*/
+                    if (connections === 2) {
+                        if (!this.isInAnyRoom(test) && DUNGEON.REFUSE_CONNECTION_TO_ROOM) {
+                            possible.push(bridge);
+                        }
                     }
                 }
             }
         }
         return possible;
     }
-    connectSomeDeadEnds(butLeave, safety = 0) {
+    _DE_connection(butLeave) {
         this.deadEnds = [...this.deadEnds];
         if (this.deadEnds.length === 0) return;
-        let DEL = this.deadEnds.length - butLeave;
-        let candidates = this.deadEnds.removeRandomPool(DEL);
+        let candidates;
+        if (butLeave === 0) {
+            candidates = this.deadEnds.splice(0);
+        } else {
+            candidates = this.deadEnds.removeRandomPool(this.deadEnds.length - butLeave);
+        }
         let CL = candidates.length;
         for (let q = 0; q < CL; q++) {
             let DeadEnd = candidates[q];
@@ -614,55 +623,20 @@ class MasterDungeon {
                 this.deadEnds.splice(w, 1);
             }
         }
-
-        safety++;
-        if (safety > 10) return;
-        if (this.deadEnds.length > butLeave)
-            this.connectSomeDeadEnds(butLeave, safety);
-        return;
+    }
+    connectSomeDeadEnds(butLeave) {
+        this._DE_connection(butLeave);
     }
     connectDeadEnds() {
-        /** check if obsolete */
-        this.deadEnds = [...this.deadEnds];
-        if (this.deadEnds.length === 0) return;
-        var round = 1;
+        this._DE_connection(0);
+    }
+    eradicateDeadEnds() {
         do {
-            var changed = 0;
-            for (let q = this.deadEnds.length - 1; q >= 0; q--) {
-                let DeadEnd = this.deadEnds[q];
-                let did = false;
-                for (let z = 0; z < 4; z++) {
-                    let bridge = DeadEnd.add(ENGINE.directions[z]);
-                    if (this.GA.isWall(bridge)) {
-                        let test = bridge.add(ENGINE.directions[z]);
-                        if (this.GA.isEmpty(test)) {
-                            let connections = this.hasConnections(bridge);
-                            if (connections === 2 && !this.adjacentToRoom(bridge)) {
-                                this.GA.carveDot(bridge);
-                                changed++;
-                                did = true;
-                            }
-                        }
-                    }
-                }
-                if (did) this.deadEnds.splice(q, 1);
-            }
-
-            var tempDE = new Set();
-            for (let q = this.deadEnds.length - 1; q >= 0; q--) {
-                let DeadEnd = this.deadEnds[q];
-                if (this.isDeadEnd(DeadEnd)) {
-                    let dir = this.deadEndDirection(DeadEnd);
-                    let newDE = DeadEnd.add(dir);
-                    this.GA.toWall(DeadEnd);
-                    if (this.isDeadEnd(newDE)) tempDE.add(newDE);
-                }
-                this.deadEnds.splice(q, 1);
-            }
-            this.deadEnds = [...tempDE];
-            round++;
+            this.connectDeadEnds();
+            this.polishDeadEnds();
         } while (this.deadEnds.length > 0);
     }
+
     getConnectionCandidates() {
         let candidates = [];
         for (let y = this.minY + 1; y < this.maxY; y++) {
@@ -743,6 +717,7 @@ class MasterDungeon {
         return missing;
     }
     polishDeadEnds() {
+        //changed to polish also DE > size 1
         this.deadEnds = [...this.deadEnds];
         for (let q = this.deadEnds.length - 1; q >= 0; q--) {
             let deadEnd = this.deadEnds[q];
@@ -750,9 +725,12 @@ class MasterDungeon {
             if (this.GA.isStair(deadEnd)) continue;
             let dir = this.deadEndDirection(deadEnd);
             let next = deadEnd.add(dir);
-            if (this.hasConnections(next) > 2) {
+            if (this.hasConnections(next) >= 2) {
                 this.GA.toWall(deadEnd);
                 this.deadEnds.splice(q, 1);
+            }
+            if (this.isDeadEnd(next)) {
+                this.deadEnds.push(next);
             }
         }
     }
@@ -1622,11 +1600,11 @@ class RatArena extends MasterDungeon {
         this.hero_start = new Grid(leftX, this.maxY + RAT_ARENA.CORR_LENGTH - 1);
         for (let c = 0; c < RAT_ARENA.NCORR; c++) {
             let startGrid = new Grid(bottomLeft.x + c * (RAT_ARENA.CORR_PAD + 1), bottomLeft.y);
-            this.line(startGrid, RAT_ARENA.CORR_LENGTH, UP);
+            this.line(startGrid, RAT_ARENA.CORR_LENGTH, UP, MAPDICT.ROOM);
             this.corridor_starts.push(startGrid);
         }
-        this.line(bottomLeft, (RAT_ARENA.NCORR - 1) * (RAT_ARENA.CORR_PAD + 1), RIGHT);
-        this.line(bottomLeft.add(UP, RAT_ARENA.CORR_LENGTH - 1), (RAT_ARENA.NCORR - 1) * (RAT_ARENA.CORR_PAD + 1), RIGHT);
+        this.line(bottomLeft, (RAT_ARENA.NCORR - 1) * (RAT_ARENA.CORR_PAD + 1) + 1, RIGHT);
+        this.line(bottomLeft.add(UP, RAT_ARENA.CORR_LENGTH - 1), (RAT_ARENA.NCORR - 1) * (RAT_ARENA.CORR_PAD + 1) + 1, RIGHT);
         let tempMaxY = this.maxY;
         this.maxY -= (RAT_ARENA.CORR_LENGTH + 2);
         this.mainArea = new Area(
@@ -1641,8 +1619,12 @@ class RatArena extends MasterDungeon {
         this.maxY = tempMaxY;
         let start = new Grid(centerX, this.maxY - RAT_ARENA.CORR_LENGTH);
         this.carveMaze(start);
-        //this.connectRooms(3);
         this.connectRooms(3, 0);
+        this.eradicateDeadEnds();
+        this.density = this.measureDensity();
+        MAZE.targetDensity = 0.65;
+        this.addConnections();
+        this.density = this.measureDensity();
 
         //
         delete this.areas;
@@ -1722,6 +1704,7 @@ var ARENA = {
 var DUNGEON = {
     VERSION: "3.01",
     CSS: "color: #f4ee42",
+    REFUSE_CONNECTION_TO_ROOM: true,
     LIMIT_ROOMS: false,
     ROOM_LIMIT: null,
     MIN_ROOM: 4,
