@@ -20,11 +20,11 @@ var DEBUG = {
     SETTING: true,
     BUTTONS: true,
     VERBOSE: true,
-    _2D_display: true,
+    _2D_display: false,
 };
 var INI = {};
 var PRG = {
-    VERSION: "0.01.00",
+    VERSION: "0.01.01",
     NAME: "GhostRun II",
     YEAR: "2021",
     CSS: "color: #239AFF;",
@@ -103,7 +103,7 @@ var PRG = {
             "fside");
         ENGINE.addBOX("DOWN", ENGINE.bottomWIDTH, ENGINE.bottomHEIGHT, ["bottom", "bottomText"], null);
 
-        ENGINE.addBOX("LEVEL", ENGINE.gameWIDTH, ENGINE.gameHEIGHT, ["blockgrid", "grid", "coord", "player"], null);
+        ENGINE.addBOX("LEVEL", ENGINE.gameWIDTH, ENGINE.gameHEIGHT, ["blockgrid", "floor", "wall","grid", "coord", "player"], null);
         //$("#LEVEL").addClass("hidden");
     },
     start() {
@@ -166,13 +166,16 @@ var GAME = {
         let randomDungeon = RAT_ARENA.create(MAP[level].width, MAP[level].height);
         MAP[level].DUNGEON = randomDungeon;
         console.log("creating random dungeon", MAP[level].DUNGEON);
+        ENGINE.resizeBOX("LEVEL", MAP[level].width * ENGINE.INI.GRIDPIX, MAP[level].height * ENGINE.INI.GRIDPIX);
         if (DEBUG._2D_display) {
             GAME.blockGrid(level);
         }
+        ENGINE.TEXTUREGRID.configure("floor", "wall", MAP[level].floor, MAP[level].wall);
+        ENGINE.TEXTUREGRID.draw(MAP[level].DUNGEON);
     },
     blockGrid(level) {
         console.log("block grid painted");
-        ENGINE.resizeBOX("LEVEL", MAP[level].width * ENGINE.INI.GRIDPIX, MAP[level].height * ENGINE.INI.GRIDPIX);
+        //ENGINE.resizeBOX("LEVEL", MAP[level].width * ENGINE.INI.GRIDPIX, MAP[level].height * ENGINE.INI.GRIDPIX);
         ENGINE.BLOCKGRID.configure("blockgrid", "#FFF", "#000");
         ENGINE.BLOCKGRID.draw(MAP[level].DUNGEON);
         GRID.grid();
@@ -209,8 +212,6 @@ var GAME = {
 
         MAZE.bias = 2;
         MAZE.useBias = true;
-        
-
     },
     setTitle: function () {
         const text = GAME.generateTitleText();

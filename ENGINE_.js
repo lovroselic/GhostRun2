@@ -1624,11 +1624,11 @@ var ENGINE = {
         ENGINE.TEXTUREGRID.wallLayerString,
         ENGINE.TEXTUREGRID.floorLayerString
       );
-      if (ENGINE.verbose)
-        console.log(
-          `%cTEXTUREGRID draw ${performance.now() - t0} ms`,
-          ENGINE.CSS
-        );
+      if (ENGINE.verbose) {
+        console.log(`%cTEXTUREGRID draw ${performance.now() - t0} ms`, ENGINE.CSS);
+      }
+
+
     }
   },
   PACGRID: {
@@ -2713,7 +2713,7 @@ class RenderData {
 class VerticalScrollingText {
   constructor(text, speed, renderData) {
     this.text = text;
-    this.speed = speed; 
+    this.speed = speed;
     this.RD = renderData;
     this.textArray = this.text.split('\n').map(x => x.trim(" "));
     this.lineHeight = Math.round(1.1 * this.RD.fs);
@@ -2749,11 +2749,11 @@ class VerticalScrollingText {
       this.cursorY = this.lineHeight;
       this.firstLine++;
     }
-    if (this.lastLine >= LN){
-      if (this.firstLine >= LN){
+    if (this.lastLine >= LN) {
+      if (this.firstLine >= LN) {
         this.reset();
-      } else this.lastLine = LN-1;
-    } 
+      } else this.lastLine = LN - 1;
+    }
 
   }
   draw() {

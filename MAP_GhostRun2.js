@@ -4,6 +4,6 @@ var MAP = {
         width: 50,
         height: 50,
         floor: "RockFloor",
-        wall: "CastleWall"
+        wall: "BrickWall4"
     },
 };
