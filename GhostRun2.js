@@ -26,7 +26,7 @@ var INI = {
     GOLD: 50
 };
 var PRG = {
-    VERSION: "0.01.02",
+    VERSION: "0.01.03",
     NAME: "GhostRun II",
     YEAR: "2021",
     CSS: "color: #239AFF;",

@@ -146,7 +146,7 @@ class MasterDungeon {
         }
         return dots;
     }
-    connectToGrid(room, N, off) {
+    connectToGrid(room, N, off = 1) {
         let connections = this.findConnections(room, off);
         let NoOfDoors = Math.min(N, connections.length);
         if (NoOfDoors === 0) {
@@ -162,7 +162,7 @@ class MasterDungeon {
             } while (NoOfDoors > 0);
         }
     }
-    tunnelToGrid(room, N, off) {
+    tunnelToGrid(room, N, off = 1) {
         let connections = this.findTunnels(room, off);
         let NoOfDoors = Math.min(N, connections.length);
         if (NoOfDoors === 0) {
@@ -179,7 +179,7 @@ class MasterDungeon {
             } while (NoOfDoors > 0);
         }
     }
-    findTunnels(room, off) {
+    findTunnels(room, off = 1) {
         room = room.area;
         var pool = [];
         let up = [];
@@ -240,7 +240,7 @@ class MasterDungeon {
         if (right.length) pool.push(right.chooseRandom());
         return pool;
     }
-    findConnections(room, off) {
+    findConnections(room, off = 1) {
         room = room.area;
         var pool = [];
         let up = [];
