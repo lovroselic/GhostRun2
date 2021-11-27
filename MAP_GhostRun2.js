@@ -7,3 +7,7 @@ var MAP = {
         wall: "BrickWall4"
     },
 };
+
+var SPAWN = {
+    gold(){}
+};

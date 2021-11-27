@@ -22,9 +22,11 @@ var DEBUG = {
     VERBOSE: true,
     _2D_display: false,
 };
-var INI = {};
+var INI = {
+    GOLD: 50
+};
 var PRG = {
-    VERSION: "0.01.01",
+    VERSION: "0.01.02",
     NAME: "GhostRun II",
     YEAR: "2021",
     CSS: "color: #239AFF;",
@@ -160,18 +162,22 @@ var GAME = {
     levelStart() {
         console.log("level", GAME.level, "started");
         this.initLevel(GAME.level);
+        this.drawFirstFrame(GAME.level);
     },
     initLevel(level) {
         console.log("level", level, "initialized");
         let randomDungeon = RAT_ARENA.create(MAP[level].width, MAP[level].height);
         MAP[level].DUNGEON = randomDungeon;
         console.log("creating random dungeon", MAP[level].DUNGEON);
+        
+    },
+    drawFirstFrame(level){
         ENGINE.resizeBOX("LEVEL", MAP[level].width * ENGINE.INI.GRIDPIX, MAP[level].height * ENGINE.INI.GRIDPIX);
+        ENGINE.TEXTUREGRID.configure("floor", "wall", MAP[level].floor, MAP[level].wall);
+        ENGINE.TEXTUREGRID.draw(MAP[level].DUNGEON);
         if (DEBUG._2D_display) {
             GAME.blockGrid(level);
         }
-        ENGINE.TEXTUREGRID.configure("floor", "wall", MAP[level].floor, MAP[level].wall);
-        ENGINE.TEXTUREGRID.draw(MAP[level].DUNGEON);
     },
     blockGrid(level) {
         console.log("block grid painted");

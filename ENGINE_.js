@@ -1620,15 +1620,10 @@ var ENGINE = {
           }
         }
       }
-      ENGINE.flattenLayers(
-        ENGINE.TEXTUREGRID.wallLayerString,
-        ENGINE.TEXTUREGRID.floorLayerString
-      );
+      ENGINE.flattenLayers(ENGINE.TEXTUREGRID.wallLayerString, ENGINE.TEXTUREGRID.floorLayerString);
       if (ENGINE.verbose) {
         console.log(`%cTEXTUREGRID draw ${performance.now() - t0} ms`, ENGINE.CSS);
       }
-
-
     }
   },
   PACGRID: {
