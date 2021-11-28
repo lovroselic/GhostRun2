@@ -20,13 +20,14 @@ var DEBUG = {
     SETTING: true,
     BUTTONS: true,
     VERBOSE: true,
-    _2D_display: false,
 };
 var INI = {
-    GOLD: 100
+    GOLD: 100,
+    HERO_SPEED: 8,
+    MINI_PIX: 3,
 };
 var PRG = {
-    VERSION: "0.01.04",
+    VERSION: "0.02.00",
     NAME: "GhostRun II",
     YEAR: "2021",
     CSS: "color: #239AFF;",
@@ -105,7 +106,7 @@ var PRG = {
             "fside");
         ENGINE.addBOX("DOWN", ENGINE.bottomWIDTH, ENGINE.bottomHEIGHT, ["bottom", "bottomText"], null);
 
-        ENGINE.addBOX("LEVEL", ENGINE.gameWIDTH, ENGINE.gameHEIGHT, ["blockgrid", "floor", "wall", "gold", "grid", "coord", "player"], null);
+        ENGINE.addBOX("LEVEL", ENGINE.gameWIDTH, ENGINE.gameHEIGHT, ["floor", "wall", "gold", "grid", "coord", "player"], null);
         //$("#LEVEL").addClass("hidden");
     },
     start() {
@@ -124,16 +125,53 @@ var PRG = {
     }
 };
 
+var HERO = {
+    startInit: function () {
+        HERO.spriteClass = "Wizard";
+        HERO.asset = ASSET[HERO.spriteClass];
+        HERO.actor = new ACTOR(
+            HERO.spriteClass,
+            HERO.x,
+            HERO.y,
+            "front",
+            HERO.asset
+        );
+        HERO.dead = false;
+    },
+    init: function () {
+        HERO.speed = INI.HERO_SPEED;
+        HERO.slowed = false;
+        HERO.dead = false;
+        GRID.gridToSprite(MAP[GAME.level].DUNGEON.startPosition, HERO.actor);
+        HERO.MoveState = new MoveState(MAP[GAME.level].DUNGEON.startPosition, null, MAP[GAME.level].DUNGEON.GA);
+        HERO.MoveState.next(UP);
+        ENGINE.VIEWPORT.check(HERO.actor);
+        ENGINE.VIEWPORT.alignTo(HERO.actor);
+        HERO.actor.orientation = "front";
+        HERO.actor.refresh();
+        console.log("HERO", HERO);
+    },
+    draw: function () {
+        if (HERO.dead) return;
+        ENGINE.spriteDraw(
+            "actors",
+            HERO.actor.vx,
+            HERO.actor.vy,
+            HERO.actor.sprite()
+        );
+        ENGINE.layersToClear.add("actors");
+    },
+};
+
 
 class Gold {
     constructor(grid) {
         this.grid = grid;
         this.sprite = SPRITE.Gold;
         this.type = "Gold";
-        //this.layer = LAYER.gold;
         this.layer = 'gold';
     }
-    draw(){
+    draw() {
         ENGINE.spriteToGrid(this.layer, this.grid, this.sprite);
     }
 }
@@ -149,6 +187,7 @@ var GAME = {
         $(ENGINE.topCanvas).off("click", ENGINE.mouseClick);
         $(ENGINE.topCanvas).css("cursor", "");
         ENGINE.hideMouse();
+        GAME.extraLife = SCORE.extraLife.clone();
 
         $("#pause").prop("disabled", false);
         $("#pause").off();
@@ -161,23 +200,27 @@ var GAME = {
         ENGINE.GAME.start(16); //INIT game loop
         GAME.prepareForRestart();
         GAME.completed = false;
+        GAME.won = false;
         GAME.level = 1;
+        GAME.score = 0;
+        GAME.lives = 4;
+
+        HERO.startInit();
 
         //debug
-        ENGINE.GAME.ANIMATION.stop();
-        TITLE.clearAllLayers();
-        ENGINE.fillLayer("background", "#000");
-        TITLE.sideBackground();
+        //ENGINE.GAME.ANIMATION.stop();
         //
-        TITLE.bottom();
 
-        GAME.levelStart();
+        //GAME.levelStart();
+        ENGINE.GAME.ANIMATION.waitThen(GAME.levelStart, 2);
 
     },
     levelStart() {
         console.log("level", GAME.level, "started");
-        this.initLevel(GAME.level);
-        this.drawFirstFrame(GAME.level);
+        HERO.energy = MAP[GAME.level].energy;
+        GAME.initLevel(GAME.level);
+        GAME.levelExecute();
+
     },
     initLevel(level) {
         console.log("level", level, "initialized");
@@ -186,20 +229,89 @@ var GAME = {
         console.log("creating random dungeon", MAP[level].DUNGEON);
         GRID_SOLO_FLOOR_OBJECT.init(MAP[level].DUNGEON);
         SPAWN.gold(level);
+        MAP[level].pw = MAP[level].width * ENGINE.INI.GRIDPIX;
+        MAP[level].ph = MAP[level].height * ENGINE.INI.GRIDPIX;
+        ENGINE.VIEWPORT.setMax({ x: MAP[level].pw, y: MAP[level].ph });
 
     },
+    levelExecute() {
+        console.log("level", GAME.level, "executes");
+        this.CI.reset();
+        ENGINE.VIEWPORT.reset();
+        HERO.init();
+
+        this.drawFirstFrame(GAME.level);
+        ENEMY.started = false;
+        ENGINE.GAME.ANIMATION.addToQueue(GAME.countIn);
+        ENGINE.GAME.ANIMATION.addToQueue(GAME.afterCountIn);
+        ENGINE.GAME.ANIMATION.addToQueue(GAME.run);
+        ENGINE.GAME.ANIMATION.queue();
+    },
+    countIn: function () {
+        if (!GAME.CI.start) GAME.CI.start = performance.now();
+        var delta = Math.floor((performance.now() - GAME.CI.start) / 1000);
+        if (delta >= 3) {
+            //ENGINE.GAME.stopAnimation = true;
+            ENGINE.GAME.ANIMATION.stop();
+        } else if (delta !== GAME.CI.now) {
+            SPEECH.speak(GAME.CI.text[delta]);
+            ENGINE.clearLayer("text");
+            ENGINE.TEXT.centeredText(GAME.CI.text[delta], ENGINE.gameHEIGHT / 4);
+            GAME.CI.now = delta;
+        }
+    },
+    afterCountIn: function () {
+        //single frame
+        ENGINE.clearLayer("text");
+        setTimeout(() => (ENEMY.started = true), MAP[GAME.level].enemy_delay);
+        ENGINE.GAME.ANIMATION.stop();
+    },
+    run: function () {
+        //GAME.run() template
+        if (ENGINE.GAME.stopAnimation) return;
+        //do all game loop stuff here
+        //GAME.respond();
+        //HERO.move();
+        //HERO.touchGold();
+        //SPLASH.manage();
+        //ENEMY.move();
+        //ENEMY.collideSplash();
+        //HERO.collideMonster();
+        //
+        GAME.frameDraw();
+    },
+    updateVieport: function () {
+        if (!ENGINE.VIEWPORT.changed) return;
+        // do required repaints
+        ENGINE.VIEWPORT.change("floor", "background");
+        ENGINE.VIEWPORT.change("gold", "background");
+        //
+        ENGINE.VIEWPORT.changed = false;
+    },
+    frameDraw: function () {
+        ENGINE.clearLayerStack();
+        GAME.updateVieport();
+        //EXPLOSIONS.draw();
+        HERO.draw();
+        //ENEMY.draw();
+        //TITLE.radar();
+        //SPLASH.draw();
+    },
     drawFirstFrame(level) {
-        ENGINE.resizeBOX("LEVEL", MAP[level].width * ENGINE.INI.GRIDPIX, MAP[level].height * ENGINE.INI.GRIDPIX);
+        ENGINE.resizeBOX("LEVEL", MAP[level].pw, MAP[level].ph);
         ENGINE.TEXTUREGRID.configure("floor", "wall", MAP[level].floor, MAP[level].wall);
         ENGINE.TEXTUREGRID.draw(MAP[level].DUNGEON);
         GAME.PAINT.gold();
-        if (DEBUG._2D_display) {
-            GAME.blockGrid(level);
-        }
+        GAME.updateVieport();
+        ENGINE.clearLayer("actors");
+        ENGINE.clearLayer("splash");
+        ENGINE.clearLayer("explosion");
+        TITLE.firstFrame();
+        HERO.draw();
+
     },
     blockGrid(level) {
         console.log("block grid painted");
-        //ENGINE.resizeBOX("LEVEL", MAP[level].width * ENGINE.INI.GRIDPIX, MAP[level].height * ENGINE.INI.GRIDPIX);
         ENGINE.BLOCKGRID.configure("blockgrid", "#FFF", "#000");
         ENGINE.BLOCKGRID.draw(MAP[level].DUNGEON);
         GRID.grid();
@@ -291,14 +403,32 @@ var GAME = {
         ENGINE.GAME.ANIMATION.next(GAME.run);
         GAME.paused = false;
     },
-    PAINT : {
-        gold(){
+    PAINT: {
+        gold() {
             ENGINE.clearLayer("gold");
             GRID_SOLO_FLOOR_OBJECT.draw();
         }
-    }
+    },
+    CI: {
+        text: ["READY", "SET?", "GO!"],
+        reset: function () {
+            GAME.CI.start = null;
+            GAME.CI.now = null;
+        }
+    },
 };
 var TITLE = {
+    firstFrame() {
+        TITLE.clearAllLayers();
+        TITLE.sideBackground();
+        TITLE.bottom();
+        TITLE.hiScore();
+        TITLE.score();
+        TITLE.energy();
+        TITLE.lives();
+        TITLE.stage();
+        TITLE.radar();
+    },
     startTitle() {
         console.log("Title started ...");
         $("#pause").prop("disabled", true);
@@ -316,7 +446,7 @@ var TITLE = {
         ENGINE.GAME.ANIMATION.next(GAME.runTitle);
     },
     clearAllLayers() {
-        ENGINE.layersToClear = new Set(["text", "animation", "actors", "explosion", "sideback", "background", "button"]);
+        ENGINE.layersToClear = new Set(["text", "animation", "actors", "explosion", "sideback", "button"]);
         ENGINE.clearLayerStack();
     },
     blackBackgrounds() {
@@ -343,7 +473,6 @@ var TITLE = {
         ENGINE.fillLayer("sideback", "#000");
     },
     bottom() {
-
         this.bottomVersion();
     },
     bottomVersion() {
@@ -383,6 +512,7 @@ var TITLE = {
         grad.addColorStop("0.9", "#CCC");
         grad.addColorStop("1", "#EEE");
         CTX.fillStyle = grad;
+        GAME.grad = grad;
         CTX.shadowColor = "#cec967";
         CTX.shadowOffsetX = 2;
         CTX.shadowOffsetY = 2;
@@ -410,10 +540,215 @@ var TITLE = {
     music() {
         AUDIO.Title.play();
     },
+    hiScore: function () {
+        var CTX = LAYER.title;
+        var fs = 16;
+        CTX.font = fs + "px Garamond";
+        CTX.fillStyle = GAME.grad;
+        CTX.shadowColor = "yellow";
+        CTX.shadowOffsetX = 1;
+        CTX.shadowOffsetY = 1;
+        CTX.shadowBlur = 2;
+        CTX.textAlign = "left";
+        var x = 700;
+        var y = 32 + fs;
+        var index = SCORE.SCORE.name[0].indexOf("&nbsp");
+        var HS;
+        if (index > 0) {
+            HS = SCORE.SCORE.name[0].substring(
+                0,
+                SCORE.SCORE.name[0].indexOf("&nbsp")
+            );
+        } else {
+            HS = SCORE.SCORE.name[0];
+        }
+        var text =
+            "HISCORE: " +
+            SCORE.SCORE.value[0].toString().padStart(6, "0") +
+            " by " +
+            HS;
+        CTX.fillText(text, x, y);
+    },
+    score() {
+        ENGINE.clearLayer("score");
+        var CTX = LAYER.score;
+        var fs = 16;
+        CTX.font = fs + "px Emulogic";
+        CTX.fillStyle = GAME.grad;
+        CTX.shadowColor = "yellow";
+        CTX.shadowOffsetX = 1;
+        CTX.shadowOffsetY = 1;
+        CTX.shadowBlur = 2;
+        CTX.textAlign = "center";
+        var x = ENGINE.sideWIDTH / 2;
+        var y = 48;
+        CTX.fillText("SCORE", x, y);
+        CTX.fillStyle = "#FFF";
+        CTX.shadowColor = "#DDD";
+        CTX.shadowOffsetX = 1;
+        CTX.shadowOffsetY = 1;
+        CTX.shadowBlur = 1;
+        y += fs + 4;
+        CTX.fillText(GAME.score.toString().padStart(6, "0"), x, y);
+        if (GAME.score >= GAME.extraLife[0]) {
+            GAME.lives++;
+            GAME.extraLife.shift();
+            TITLE.lives();
+        }
+    },
+    energy: function () {
+        ENGINE.clearLayer("energy");
+        var CTX = LAYER.energy;
+        var fs = 16;
+        CTX.font = fs + "px Emulogic";
+        CTX.fillStyle = GAME.grad;
+        CTX.shadowColor = "yellow";
+        CTX.shadowOffsetX = 1;
+        CTX.shadowOffsetY = 1;
+        CTX.shadowBlur = 2;
+        CTX.textAlign = "center";
+        var x = ENGINE.sideWIDTH / 2;
+        var y = 112;
+        CTX.fillText("ENERGY", x, y);
+        y += fs;
+        var pad = 16;
+        CTX.beginPath();
+        CTX.lineWidth = "1";
+        CTX.strokeStyle = "#DDD";
+        var energyWidth = ENGINE.sideWIDTH - 2 * pad;
+        CTX.rect(pad, y, energyWidth, 32);
+        CTX.closePath();
+        CTX.stroke();
+        CTX.fillStyle = "#DDD";
+        CTX.shadowColor = "transparent";
+        CTX.shadowOffsetX = 0;
+        CTX.shadowOffsetY = 0;
+        CTX.shadowBlur = 0;
+        var percent = HERO.energy / MAP[GAME.level].energy;
+        if (percent < 0.2 && percent > 0.1) {
+            CTX.fillStyle = "yellow";
+        } else if (percent <= 0.1) {
+            CTX.fillStyle = "red";
+        }
+        CTX.fillRect(pad + 1, y + 1, Math.round(energyWidth * percent) - 2, 30);
+    },
+    lives: function () {
+        ENGINE.clearLayer("lives");
+        var CTX = LAYER.lives;
+        var fs = 16;
+        CTX.font = fs + "px Emulogic";
+        CTX.fillStyle = GAME.grad;
+        CTX.shadowColor = "yellow";
+        CTX.shadowOffsetX = 1;
+        CTX.shadowOffsetY = 1;
+        CTX.shadowBlur = 2;
+        CTX.textAlign = "center";
+        var x = ENGINE.sideWIDTH / 2;
+        var y = 220;
+        CTX.fillText("LIVES", x, y);
+        y += fs + 32;
+        CTX.shadowColor = "transparent";
+        CTX.shadowOffsetX = 0;
+        CTX.shadowOffsetY = 0;
+        CTX.shadowBlur = 0;
+        var spread = ENGINE.spreadAroundCenter(GAME.lives, x, 32);
+        for (let q = 0; q < GAME.lives; q++) {
+            ENGINE.spriteDraw("lives", spread[q], y, SPRITE.Wizard_front_0);
+        }
+    },
+    stage: function () {
+        ENGINE.clearLayer("stage");
+        var CTX = LAYER.stage;
+        var fs = 16;
+        CTX.font = fs + "px Emulogic";
+        CTX.fillStyle = GAME.grad;
+        CTX.shadowColor = "yellow";
+        CTX.shadowOffsetX = 1;
+        CTX.shadowOffsetY = 1;
+        CTX.shadowBlur = 2;
+        CTX.textAlign = "center";
+        var x = ENGINE.sideWIDTH / 2;
+        var y = 344;
+        CTX.fillText("STAGE", x, y);
+        CTX.fillStyle = "#FFF";
+        CTX.shadowColor = "#DDD";
+        CTX.shadowOffsetX = 1;
+        CTX.shadowOffsetY = 1;
+        CTX.shadowBlur = 1;
+        y += fs + 4;
+        CTX.fillText(GAME.level.toString().padStart(2, "0"), x, y);
+    },
+    radar: function () {
+        ENGINE.clearLayer("radar");
+        var CTX = LAYER.radar;
+        var fs = 16;
+        CTX.font = fs + "px Emulogic";
+        CTX.fillStyle = GAME.grad;
+        CTX.shadowColor = "yellow";
+        CTX.shadowOffsetX = 1;
+        CTX.shadowOffsetY = 1;
+        CTX.shadowBlur = 2;
+        CTX.textAlign = "center";
+        var x = ENGINE.sideWIDTH / 2;
+        var y = 420;
+        CTX.fillText("RADAR", x, y);
+
+        var pad = 20;
+        y += fs;
+        CTX.beginPath();
+        CTX.lineWidth = "1";
+        CTX.strokeStyle = "#DDD";
+        CTX.rect(pad, y, ENGINE.sideWIDTH - 2 * pad, 152);
+        CTX.closePath();
+        CTX.stroke();
+        CTX.shadowColor = "transparent";
+        CTX.shadowOffsetX = 0;
+        CTX.shadowOffsetY = 0;
+        CTX.shadowBlur = 0;
+        var orx = pad + 1;
+        var ory = y + 1;
+        //draw hero
+        CTX.fillStyle = "#00F"; //blue
+        CTX.pixelAt(
+            orx + HERO.MoveState.homeGrid.x * INI.MINI_PIX,
+            ory + HERO.MoveState.homeGrid.y * INI.MINI_PIX,
+            INI.MINI_PIX
+        );
+
+        //draw gold
+
+        CTX.fillStyle = "yellow";
+        for (let q = 0; q < GRID_SOLO_FLOOR_OBJECT.size; q++) {
+            let grid = GRID_SOLO_FLOOR_OBJECT.POOL[q].grid;
+            CTX.pixelAt(
+                orx + grid.x * INI.MINI_PIX,
+                ory + grid.y * INI.MINI_PIX,
+                INI.MINI_PIX
+            );
+        }
+
+
+        //draw enemy
+        /*
+        CTX.fillStyle = "red";
+        for (let q = 0; q < ENEMY.pool.length; q++) {
+          CTX.pixelAt(
+            orx + ENEMY.pool[q].MoveState.homeGrid.x * INI.MINI_PIX,
+            ory + ENEMY.pool[q].MoveState.homeGrid.y * INI.MINI_PIX,
+            INI.MINI_PIX
+          );
+        }
+        */
+    },
 };
 // -- main --
 $(function () {
     PRG.INIT();
+    SPEECH.init();
     PRG.setup();
     ENGINE.LOAD.preload();
+    SCORE.init("SC", "GhostRun", 10, 2500);
+    SCORE.loadHS();
+    SCORE.hiScore();
+    SCORE.extraLife = [10000, 20000, 30000, 40000, 50000, 60000, 70000, 80000, 90000, 100000, Infinity];
 });

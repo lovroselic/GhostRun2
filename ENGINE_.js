@@ -1082,6 +1082,9 @@ var ENGINE = {
     },
     vx: 0,
     vy: 0,
+    report() {
+      console.log("VIEWPORT:", ENGINE.VIEWPORT.vx, ENGINE.VIEWPORT.vy);
+    },
     change(from, to) {
       ENGINE.copyLayer(
         from,
@@ -2310,13 +2313,16 @@ class _3D_ACTOR {
   }
 }
 class MoveState {
-  constructor(startGrid, dir) {
+  constructor(startGrid, dir, GA) {
     this.startGrid = Grid.toClass(startGrid);
     this.dir = dir || null;
     this.homeGrid = Grid.toClass(startGrid);
     this.endGrid = Grid.toClass(startGrid);
     this.moving = false;
     this.gridArray = null;
+    if (GA) {
+      this.linkGridArray(GA);
+    }
   }
   linkGridArray(gridArray) {
     this.gridArray = gridArray;

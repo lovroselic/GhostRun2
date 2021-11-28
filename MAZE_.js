@@ -1596,7 +1596,8 @@ class RatArena extends MasterDungeon {
         let leftX = centerX - F * (RAT_ARENA.CORR_PAD + 1);
         let bottomLeft = new Grid(leftX, this.maxY);
         this.corridor_starts = [];
-        this.hero_start = new Grid(leftX, this.maxY + RAT_ARENA.CORR_LENGTH - 1);
+        //startPosition
+        this.startPosition = new Grid(centerX, this.maxY - Math.round((RAT_ARENA.CORR_LENGTH - 1) / 2));
         for (let c = 0; c < RAT_ARENA.NCORR; c++) {
             let startGrid = new Grid(bottomLeft.x + c * (RAT_ARENA.CORR_PAD + 1), bottomLeft.y);
             this.line(startGrid, RAT_ARENA.CORR_LENGTH, UP, MAPDICT.ROOM);
@@ -1701,7 +1702,7 @@ var ARENA = {
     }
 };
 var DUNGEON = {
-    VERSION: "3.01",
+    VERSION: "3.02",
     CSS: "color: #f4ee42",
     REFUSE_CONNECTION_TO_ROOM: true,
     LIMIT_ROOMS: false,

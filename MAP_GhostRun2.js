@@ -4,19 +4,18 @@ var MAP = {
         width: 50,
         height: 50,
         floor: "RockFloor",
-        wall: "BrickWall4"
+        wall: "BrickWall4",
+        energy: 1500,
+        enemy_delay: 3000
     },
 };
 
 var SPAWN = {
     gold(level) {
-        console.log("...spawning gold for level:", level);
         let goldGrids = MAP[level].DUNGEON.poolOfGrids(INI.GOLD);
-        console.log("goldGrids", goldGrids);
-        for (let gold of goldGrids){
+        for (let gold of goldGrids) {
             GRID_SOLO_FLOOR_OBJECT.add(new Gold(gold));
         }
         GRID_SOLO_FLOOR_OBJECT.manage(MAP[level].DUNGEON);
-        console.log(GRID_SOLO_FLOOR_OBJECT);
     }
 };
