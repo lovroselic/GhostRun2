@@ -37,6 +37,46 @@ var IAM = {
     },
 };
 
+/** Texture grid IA Managers */
+
+var GRID_SOLO_FLOOR_OBJECT = {
+    /*
+    expects simple static objects withouot moveState 
+    */    
+    POOL: null,
+    map: null,
+    IA: "grid_solo_floor_object_IA",
+    size: null,
+    draw: IAM.draw,
+    linkMap: IAM.linkMap,
+    add: IAM.add,
+    remove: IAM.remove,
+    poolToIA(IA) {
+        for (const obj of this.POOL) {
+            IA.next(obj.grid, obj.id);
+        }
+    },
+    init(map) {
+        this.POOL = [];
+        this.linkMap(map);
+    },
+    reIndexRequired: false,
+    reIndex() {
+        if (!this.reIndexRequired) return;
+        this.POOL = this.POOL.filter((el) => el !== null);
+        for (const [index, obj] of this.POOL.entries()) {
+            obj.id = index + 1;
+        }
+        this.reIndexRequired = false;
+    },
+    manage(map) {
+        map[this.IA] = new IndexArray(map.width, map.height, 1, 1);
+        this.reIndex();
+        this.poolToIA(map[this.IA]);
+        this.size = this.POOL.length;
+    },
+};
+
 /**  Raycast IA Managers */
 var FLOOR_OBJECT = {
     POOL: null,

@@ -636,7 +636,6 @@ class MasterDungeon {
             this.polishDeadEnds();
         } while (this.deadEnds.length > 0);
     }
-
     getConnectionCandidates() {
         let candidates = [];
         for (let y = this.minY + 1; y < this.maxY; y++) {

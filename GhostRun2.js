@@ -23,10 +23,10 @@ var DEBUG = {
     _2D_display: false,
 };
 var INI = {
-    GOLD: 50
+    GOLD: 100
 };
 var PRG = {
-    VERSION: "0.01.03",
+    VERSION: "0.01.04",
     NAME: "GhostRun II",
     YEAR: "2021",
     CSS: "color: #239AFF;",
@@ -105,7 +105,7 @@ var PRG = {
             "fside");
         ENGINE.addBOX("DOWN", ENGINE.bottomWIDTH, ENGINE.bottomHEIGHT, ["bottom", "bottomText"], null);
 
-        ENGINE.addBOX("LEVEL", ENGINE.gameWIDTH, ENGINE.gameHEIGHT, ["blockgrid", "floor", "wall","grid", "coord", "player"], null);
+        ENGINE.addBOX("LEVEL", ENGINE.gameWIDTH, ENGINE.gameHEIGHT, ["blockgrid", "floor", "wall", "gold", "grid", "coord", "player"], null);
         //$("#LEVEL").addClass("hidden");
     },
     start() {
@@ -123,6 +123,21 @@ var PRG = {
         TITLE.startTitle();
     }
 };
+
+
+class Gold {
+    constructor(grid) {
+        this.grid = grid;
+        this.sprite = SPRITE.Gold;
+        this.type = "Gold";
+        //this.layer = LAYER.gold;
+        this.layer = 'gold';
+    }
+    draw(){
+        ENGINE.spriteToGrid(this.layer, this.grid, this.sprite);
+    }
+}
+
 var GAME = {
     start() {
         console.log("GAME started");
@@ -169,12 +184,15 @@ var GAME = {
         let randomDungeon = RAT_ARENA.create(MAP[level].width, MAP[level].height);
         MAP[level].DUNGEON = randomDungeon;
         console.log("creating random dungeon", MAP[level].DUNGEON);
-        
+        GRID_SOLO_FLOOR_OBJECT.init(MAP[level].DUNGEON);
+        SPAWN.gold(level);
+
     },
-    drawFirstFrame(level){
+    drawFirstFrame(level) {
         ENGINE.resizeBOX("LEVEL", MAP[level].width * ENGINE.INI.GRIDPIX, MAP[level].height * ENGINE.INI.GRIDPIX);
         ENGINE.TEXTUREGRID.configure("floor", "wall", MAP[level].floor, MAP[level].wall);
         ENGINE.TEXTUREGRID.draw(MAP[level].DUNGEON);
+        GAME.PAINT.gold();
         if (DEBUG._2D_display) {
             GAME.blockGrid(level);
         }
@@ -273,6 +291,12 @@ var GAME = {
         ENGINE.GAME.ANIMATION.next(GAME.run);
         GAME.paused = false;
     },
+    PAINT : {
+        gold(){
+            ENGINE.clearLayer("gold");
+            GRID_SOLO_FLOOR_OBJECT.draw();
+        }
+    }
 };
 var TITLE = {
     startTitle() {
