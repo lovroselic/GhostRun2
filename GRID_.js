@@ -16,7 +16,7 @@ known bugs:
 */
 
 var GRID = {
-  VERSION: "3.01",
+  VERSION: "3.02",
   CSS: "color: #0AA",
   SETTING: {
     ALLOW_CROSS: false,
@@ -174,19 +174,24 @@ var GRID = {
   },
   translateMove(
     entity,
+    lapsedTime,
     gridArray,
     changeView = false,
     onFinish = null,
-    animate = true
+    animate = true,
   ) {
     entity.actor.x += entity.MoveState.dir.x * entity.speed;
     entity.actor.y += entity.MoveState.dir.y * entity.speed;
     entity.actor.orientation = entity.actor.getOrientation(
       entity.MoveState.dir
     );
-    if (animate) {
-      entity.actor.animateMove(entity.actor.orientation);
+    if (animate){
+      entity.actor.updateAnimation(lapsedTime, entity.actor.orientation);
     }
+
+    /*if (animate) {
+      entity.actor.animateMove(entity.actor.orientation);
+    }*/
     entity.MoveState.homeGrid = GRID.coordToGrid(
       entity.actor.x,
       entity.actor.y

@@ -30,7 +30,7 @@ var DownRight = new Vector(1, 1);
 var DownLeft = new Vector(-1, 1);
 
 var ENGINE = {
-  VERSION: "3.01.DEV",
+  VERSION: "3.02.DEV",
   CSS: "color: #0FA",
   INI: {
     ANIMATION_INTERVAL: 16,
@@ -2117,7 +2117,7 @@ class LiveSPRITE {
   }
 }
 class ACTOR {
-  constructor(sprite_class, x, y, orientation, asset) {
+  constructor(sprite_class, x, y, orientation, asset, fps) {
     this.class = sprite_class;
     this.x = x || 0;
     this.y = y || 0;
@@ -2125,6 +2125,9 @@ class ACTOR {
     this.asset = asset || null;
     this.vx = 0;
     this.vy = 0;
+    this.fps = fps || 30;
+    this.nextSpriteTime = 1000 / this.fps;
+    this.currentSpriteTime = 0;
     this.resetIndexes();
     if (this.class !== null) this.refresh();
   }
@@ -2193,6 +2196,13 @@ class ACTOR {
         break;
     }
     return orientation;
+  }
+  updateAnimation(time, orientation) {
+    this.currentSpriteTime += time;
+    if (this.currentSpriteTime >= this.nextSpriteTime) {
+      this.currentSpriteTime -= this.nextSpriteTime;
+      this.animateMove(orientation);
+    }
   }
   animateMove(orientation) {
     this[orientation + "_index"]++;

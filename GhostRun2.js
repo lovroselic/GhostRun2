@@ -27,7 +27,7 @@ var INI = {
     MINI_PIX: 3,
 };
 var PRG = {
-    VERSION: "0.02.00",
+    VERSION: "0.02.01",
     NAME: "GhostRun II",
     YEAR: "2021",
     CSS: "color: #239AFF;",
@@ -134,7 +134,8 @@ var HERO = {
             HERO.x,
             HERO.y,
             "front",
-            HERO.asset
+            HERO.asset,
+            30
         );
         HERO.dead = false;
     },
@@ -161,6 +162,48 @@ var HERO = {
         );
         ENGINE.layersToClear.add("actors");
     },
+    move: function (lapsedTime) {
+        if (HERO.dead) return;
+        if (HERO.MoveState.moving) {
+            GRID.translateMove(HERO, lapsedTime, HERO.MoveState.gridArray, true, HeroOnFinish);
+        } else {
+            let dir = HERO.findNewDir();
+            //HERO.changeDirection(dir);
+            HERO.MoveState.next(dir);
+        }
+
+        function HeroOnFinish() {
+            if (DEBUG.INF_ENERGY) return;
+            if (!HERO.slowed) HERO.energy--;
+            if (HERO.energy <= 0 && !HERO.slowed) {
+                HERO.energy = 0;
+                HERO.speed /= 2;
+                HERO.slowed = true;
+            }
+            TITLE.energy();
+        }
+    },
+
+    tryToChangeDir: function (dir) {
+        let back = HERO.MoveState.dir.mirror();
+        if (GRID.same(back, dir)) {
+            //HERO.MoveState.flip();
+            HERO.MoveState.next(dir);
+            return;
+        }
+        if (!HERO.MoveState.moving) {
+            let dirs = HERO.MoveState.gridArray.getDirectionsIfNot(HERO.MoveState.endGrid, MAPDICT.WALL, HERO.MoveState.dir.mirror());
+            //HERO.changeDirection(dir);
+            if (GRID.isGridIn(dir, dirs) !== -1){
+                HERO.MoveState.next(dir);
+            }
+        }
+    },
+    findNewDir: function () {
+        let dirs = HERO.MoveState.gridArray.getDirectionsIfNot(HERO.MoveState.endGrid, MAPDICT.WALL, HERO.MoveState.dir.mirror());
+        if (GRID.isGridIn(HERO.MoveState.dir, dirs) !== -1) return HERO.MoveState.dir;
+        return dirs.chooseRandom();
+      },
 };
 
 
@@ -198,6 +241,7 @@ var GAME = {
 
         ENGINE.watchVisibility(GAME.lostFocus);
         ENGINE.GAME.start(16); //INIT game loop
+        //ENGINE.GAME.start(32); //INIT game loop
         GAME.prepareForRestart();
         GAME.completed = false;
         GAME.won = false;
@@ -206,14 +250,7 @@ var GAME = {
         GAME.lives = 4;
 
         HERO.startInit();
-
-        //debug
-        //ENGINE.GAME.ANIMATION.stop();
-        //
-
-        //GAME.levelStart();
         ENGINE.GAME.ANIMATION.waitThen(GAME.levelStart, 2);
-
     },
     levelStart() {
         console.log("level", GAME.level, "started");
@@ -266,12 +303,13 @@ var GAME = {
         setTimeout(() => (ENEMY.started = true), MAP[GAME.level].enemy_delay);
         ENGINE.GAME.ANIMATION.stop();
     },
-    run: function () {
+    run: function (lapsedTime) {
+        //console.log(lapsedTime);
         //GAME.run() template
         if (ENGINE.GAME.stopAnimation) return;
         //do all game loop stuff here
-        //GAME.respond();
-        //HERO.move();
+        GAME.respond();
+        HERO.move(lapsedTime);
         //HERO.touchGold();
         //SPLASH.manage();
         //ENEMY.move();
@@ -294,7 +332,7 @@ var GAME = {
         //EXPLOSIONS.draw();
         HERO.draw();
         //ENEMY.draw();
-        //TITLE.radar();
+        TITLE.radar();
         //SPLASH.draw();
     },
     drawFirstFrame(level) {
@@ -403,6 +441,50 @@ var GAME = {
         ENGINE.GAME.ANIMATION.next(GAME.run);
         GAME.paused = false;
     },
+    respond: function () {
+        //GAME.respond() template
+        if (HERO.dead) return;
+        var map = ENGINE.GAME.keymap;
+    
+        //fall throught section
+        /*if (map[ENGINE.KEY.map.F9]) {
+          console.log("finish level");
+          DEBUG.finishLevel();
+        }*/
+        /*if (map[ENGINE.KEY.map.F8]) {
+          console.log("kill ,,,,,");
+          GAME.lives = 0;
+        }*/
+    
+    
+        if (map[ENGINE.KEY.map.ctrl]) {
+          console.log("CTRL");
+
+          //HERO.splash();
+          //AUDIO.Splash.play();
+          ENGINE.GAME.keymap[ENGINE.KEY.map.ctrl] = false; //NO repeat
+        }
+
+    
+        //single key section
+        if (map[ENGINE.KEY.map.left]) {
+          HERO.tryToChangeDir(LEFT);
+          return;
+        }
+        if (map[ENGINE.KEY.map.right]) {
+          HERO.tryToChangeDir(RIGHT);
+          return;
+        }
+        if (map[ENGINE.KEY.map.up]) {
+          HERO.tryToChangeDir(UP);
+          return;
+        }
+        if (map[ENGINE.KEY.map.down]) {
+          HERO.tryToChangeDir(DOWN);
+          return;
+        }
+        return;
+      },
     PAINT: {
         gold() {
             ENGINE.clearLayer("gold");
