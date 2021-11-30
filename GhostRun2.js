@@ -27,7 +27,7 @@ var INI = {
     MINI_PIX: 3,
 };
 var PRG = {
-    VERSION: "0.02.01",
+    VERSION: "0.02.02",
     NAME: "GhostRun II",
     YEAR: "2021",
     CSS: "color: #239AFF;",
@@ -194,7 +194,7 @@ var HERO = {
         if (!HERO.MoveState.moving) {
             let dirs = HERO.MoveState.gridArray.getDirectionsIfNot(HERO.MoveState.endGrid, MAPDICT.WALL, HERO.MoveState.dir.mirror());
             //HERO.changeDirection(dir);
-            if (GRID.isGridIn(dir, dirs) !== -1){
+            if (GRID.isGridIn(dir, dirs) !== -1) {
                 HERO.MoveState.next(dir);
             }
         }
@@ -203,7 +203,7 @@ var HERO = {
         let dirs = HERO.MoveState.gridArray.getDirectionsIfNot(HERO.MoveState.endGrid, MAPDICT.WALL, HERO.MoveState.dir.mirror());
         if (GRID.isGridIn(HERO.MoveState.dir, dirs) !== -1) return HERO.MoveState.dir;
         return dirs.chooseRandom();
-      },
+    },
 };
 
 
@@ -236,12 +236,11 @@ var GAME = {
         $("#pause").off();
         GAME.paused = false;
 
-        let GameRD = new RenderData("DeepDown", 35, "#FFF", "text", "#BBB", 2, 2, 2);
+        let GameRD = new RenderData("Arcade", 50, "#DDD", "text", "#FFF", 2, 2, 2);
         ENGINE.TEXT.setRD(GameRD);
 
         ENGINE.watchVisibility(GAME.lostFocus);
         ENGINE.GAME.start(16); //INIT game loop
-        //ENGINE.GAME.start(32); //INIT game loop
         GAME.prepareForRestart();
         GAME.completed = false;
         GAME.won = false;
@@ -273,35 +272,33 @@ var GAME = {
     },
     levelExecute() {
         console.log("level", GAME.level, "executes");
-        this.CI.reset();
+        GAME.CI.reset();
         ENGINE.VIEWPORT.reset();
         HERO.init();
 
-        this.drawFirstFrame(GAME.level);
+        GAME.drawFirstFrame(GAME.level);
         ENEMY.started = false;
-        ENGINE.GAME.ANIMATION.addToQueue(GAME.countIn);
-        ENGINE.GAME.ANIMATION.addToQueue(GAME.afterCountIn);
-        ENGINE.GAME.ANIMATION.addToQueue(GAME.run);
-        ENGINE.GAME.ANIMATION.queue();
+
+        ENGINE.GAME.ANIMATION.next(GAME.countIn);
     },
     countIn: function () {
+        if (ENGINE.GAME.stopAnimation) return;
         if (!GAME.CI.start) GAME.CI.start = performance.now();
         var delta = Math.floor((performance.now() - GAME.CI.start) / 1000);
         if (delta >= 3) {
-            //ENGINE.GAME.stopAnimation = true;
-            ENGINE.GAME.ANIMATION.stop();
+            ENGINE.GAME.ANIMATION.next(GAME.afterCountIn);
         } else if (delta !== GAME.CI.now) {
             SPEECH.speak(GAME.CI.text[delta]);
             ENGINE.clearLayer("text");
-            ENGINE.TEXT.centeredText(GAME.CI.text[delta], ENGINE.gameHEIGHT / 4);
+            ENGINE.TEXT.centeredText(GAME.CI.text[delta], ENGINE.gameWIDTH, ENGINE.gameHEIGHT / 4);
             GAME.CI.now = delta;
         }
     },
     afterCountIn: function () {
-        //single frame
+        if (ENGINE.GAME.stopAnimation) return;
         ENGINE.clearLayer("text");
         setTimeout(() => (ENEMY.started = true), MAP[GAME.level].enemy_delay);
-        ENGINE.GAME.ANIMATION.stop();
+        ENGINE.GAME.ANIMATION.next(GAME.run);
     },
     run: function (lapsedTime) {
         //console.log(lapsedTime);
@@ -445,7 +442,7 @@ var GAME = {
         //GAME.respond() template
         if (HERO.dead) return;
         var map = ENGINE.GAME.keymap;
-    
+
         //fall throught section
         /*if (map[ENGINE.KEY.map.F9]) {
           console.log("finish level");
@@ -455,36 +452,36 @@ var GAME = {
           console.log("kill ,,,,,");
           GAME.lives = 0;
         }*/
-    
-    
-        if (map[ENGINE.KEY.map.ctrl]) {
-          console.log("CTRL");
 
-          //HERO.splash();
-          //AUDIO.Splash.play();
-          ENGINE.GAME.keymap[ENGINE.KEY.map.ctrl] = false; //NO repeat
+
+        if (map[ENGINE.KEY.map.ctrl]) {
+            console.log("CTRL");
+
+            //HERO.splash();
+            //AUDIO.Splash.play();
+            ENGINE.GAME.keymap[ENGINE.KEY.map.ctrl] = false; //NO repeat
         }
 
-    
+
         //single key section
         if (map[ENGINE.KEY.map.left]) {
-          HERO.tryToChangeDir(LEFT);
-          return;
+            HERO.tryToChangeDir(LEFT);
+            return;
         }
         if (map[ENGINE.KEY.map.right]) {
-          HERO.tryToChangeDir(RIGHT);
-          return;
+            HERO.tryToChangeDir(RIGHT);
+            return;
         }
         if (map[ENGINE.KEY.map.up]) {
-          HERO.tryToChangeDir(UP);
-          return;
+            HERO.tryToChangeDir(UP);
+            return;
         }
         if (map[ENGINE.KEY.map.down]) {
-          HERO.tryToChangeDir(DOWN);
-          return;
+            HERO.tryToChangeDir(DOWN);
+            return;
         }
         return;
-      },
+    },
     PAINT: {
         gold() {
             ENGINE.clearLayer("gold");

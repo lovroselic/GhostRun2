@@ -1119,12 +1119,12 @@ var ENGINE = {
     },
     RD: null,
     text(text, x, y) {
-      var CTX = ENGINE.TEXT.RD.layer;
+      let CTX = ENGINE.TEXT.RD.layer;
       CTX.textAlign = "center";
       CTX.fillText(text, x, y);
     },
     centeredText(text, width, y) {
-      var x = (width / 2) | 0;
+      let x = (width / 2) | 0;
       ENGINE.TEXT.text(text, x, y);
     },
     leftText(text, x, y) {
