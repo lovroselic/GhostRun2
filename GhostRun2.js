@@ -25,9 +25,10 @@ var INI = {
     GOLD: 100,
     HERO_SPEED: 8,
     MINI_PIX: 3,
+    SCORE_GOLD: 10,
 };
 var PRG = {
-    VERSION: "0.02.02",
+    VERSION: "0.03.00",
     NAME: "GhostRun II",
     YEAR: "2021",
     CSS: "color: #239AFF;",
@@ -124,9 +125,8 @@ var PRG = {
         TITLE.startTitle();
     }
 };
-
 var HERO = {
-    startInit: function () {
+    startInit() {
         HERO.spriteClass = "Wizard";
         HERO.asset = ASSET[HERO.spriteClass];
         HERO.actor = new ACTOR(
@@ -139,7 +139,7 @@ var HERO = {
         );
         HERO.dead = false;
     },
-    init: function () {
+    init() {
         HERO.speed = INI.HERO_SPEED;
         HERO.slowed = false;
         HERO.dead = false;
@@ -152,7 +152,7 @@ var HERO = {
         HERO.actor.refresh();
         console.log("HERO", HERO);
     },
-    draw: function () {
+    draw() {
         if (HERO.dead) return;
         ENGINE.spriteDraw(
             "actors",
@@ -162,14 +162,12 @@ var HERO = {
         );
         ENGINE.layersToClear.add("actors");
     },
-    move: function (lapsedTime) {
+    move(lapsedTime) {
         if (HERO.dead) return;
         if (HERO.MoveState.moving) {
             GRID.translateMove(HERO, lapsedTime, HERO.MoveState.gridArray, true, HeroOnFinish);
         } else {
-            let dir = HERO.findNewDir();
-            //HERO.changeDirection(dir);
-            HERO.MoveState.next(dir);
+            HERO.MoveState.next(HERO.findNewDir());
         }
 
         function HeroOnFinish() {
@@ -183,30 +181,41 @@ var HERO = {
             TITLE.energy();
         }
     },
-
-    tryToChangeDir: function (dir) {
-        let back = HERO.MoveState.dir.mirror();
-        if (GRID.same(back, dir)) {
-            //HERO.MoveState.flip();
-            HERO.MoveState.next(dir);
+    tryToChangeDir(dir) {
+        if (GRID.same(HERO.MoveState.dir.mirror(), dir)) {
+            if (GRID.same(HERO.MoveState.startGrid, GRID.trueToGrid(HERO.actor))) return;
+            HERO.MoveState.reverse();
             return;
         }
         if (!HERO.MoveState.moving) {
-            let dirs = HERO.MoveState.gridArray.getDirectionsIfNot(HERO.MoveState.endGrid, MAPDICT.WALL, HERO.MoveState.dir.mirror());
-            //HERO.changeDirection(dir);
+            let dirs = HERO.MoveState.gridArray.getDirectionsIfNot(HERO.MoveState.endGrid, MAPDICT.WALL);
             if (GRID.isGridIn(dir, dirs) !== -1) {
                 HERO.MoveState.next(dir);
+                return;
             }
         }
     },
-    findNewDir: function () {
+    findNewDir() {
         let dirs = HERO.MoveState.gridArray.getDirectionsIfNot(HERO.MoveState.endGrid, MAPDICT.WALL, HERO.MoveState.dir.mirror());
         if (GRID.isGridIn(HERO.MoveState.dir, dirs) !== -1) return HERO.MoveState.dir;
         return dirs.chooseRandom();
     },
+    touchGold() {
+        let IA = MAP[GAME.level].DUNGEON.grid_solo_floor_object_IA;
+        let goldIndex = IA.unroll(HERO.MoveState.homeGrid)[0];
+        if (goldIndex) {
+            GRID_SOLO_FLOOR_OBJECT.remove(goldIndex);
+            GRID_SOLO_FLOOR_OBJECT.reIndexRequired = true;
+            GAME.score += INI.SCORE_GOLD;
+            TITLE.score();
+            GAME.PAINT.gold();
+            ENGINE.VIEWPORT.changed = true;
+            AUDIO.Pick.play();
+        }
+        //check if over
+
+    }
 };
-
-
 class Gold {
     constructor(grid) {
         this.grid = grid;
@@ -218,7 +227,6 @@ class Gold {
         ENGINE.spriteToGrid(this.layer, this.grid, this.sprite);
     }
 }
-
 var GAME = {
     start() {
         console.log("GAME started");
@@ -236,7 +244,7 @@ var GAME = {
         $("#pause").off();
         GAME.paused = false;
 
-        let GameRD = new RenderData("Arcade", 50, "#DDD", "text", "#FFF", 2, 2, 2);
+        let GameRD = new RenderData("Arcade", 60, "#DDD", "text", "#FFF", 2, 2, 2);
         ENGINE.TEXT.setRD(GameRD);
 
         ENGINE.watchVisibility(GAME.lostFocus);
@@ -281,6 +289,13 @@ var GAME = {
 
         ENGINE.GAME.ANIMATION.next(GAME.countIn);
     },
+    levelEnd(){
+        console.log("level", GAME.level, "ended.");
+        SPEECH.speak("Good job!");
+        GAME.levelCompleted = true;
+        //
+        ENGINE.GAME.ANIMATION.stop();
+    },
     countIn: function () {
         if (ENGINE.GAME.stopAnimation) return;
         if (!GAME.CI.start) GAME.CI.start = performance.now();
@@ -307,7 +322,8 @@ var GAME = {
         //do all game loop stuff here
         GAME.respond();
         HERO.move(lapsedTime);
-        //HERO.touchGold();
+        HERO.touchGold();
+        GRID_SOLO_FLOOR_OBJECT.manage();
         //SPLASH.manage();
         //ENEMY.move();
         //ENEMY.collideSplash();
@@ -343,12 +359,14 @@ var GAME = {
         ENGINE.clearLayer("explosion");
         TITLE.firstFrame();
         HERO.draw();
+        //debug
+        GAME.blockGrid(level);
 
     },
     blockGrid(level) {
         console.log("block grid painted");
-        ENGINE.BLOCKGRID.configure("blockgrid", "#FFF", "#000");
-        ENGINE.BLOCKGRID.draw(MAP[level].DUNGEON);
+        //ENGINE.BLOCKGRID.configure("blockgrid", "#FFF", "#000");
+        //ENGINE.BLOCKGRID.draw(MAP[level].DUNGEON);
         GRID.grid();
         GRID.paintCoord("coord", MAP[level].DUNGEON);
     },
@@ -798,6 +816,7 @@ var TITLE = {
 
         CTX.fillStyle = "yellow";
         for (let q = 0; q < GRID_SOLO_FLOOR_OBJECT.size; q++) {
+            if (GRID_SOLO_FLOOR_OBJECT.POOL[q] === null) continue;
             let grid = GRID_SOLO_FLOOR_OBJECT.POOL[q].grid;
             CTX.pixelAt(
                 orx + grid.x * INI.MINI_PIX,

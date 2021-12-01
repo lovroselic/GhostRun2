@@ -188,10 +188,6 @@ var GRID = {
     if (animate){
       entity.actor.updateAnimation(lapsedTime, entity.actor.orientation);
     }
-
-    /*if (animate) {
-      entity.actor.animateMove(entity.actor.orientation);
-    }*/
     entity.MoveState.homeGrid = GRID.coordToGrid(
       entity.actor.x,
       entity.actor.y
@@ -1341,7 +1337,6 @@ class IndexArray {
     }
     return false;
   }
-  //removeBank() {}
 }
 var MINIMAP = {
   LEGEND: {

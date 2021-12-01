@@ -69,7 +69,8 @@ var GRID_SOLO_FLOOR_OBJECT = {
         }
         this.reIndexRequired = false;
     },
-    manage(map) {
+    manage() {
+        let map = this.map;
         map[this.IA] = new IndexArray(map.width, map.height, 1, 1);
         this.reIndex();
         this.poolToIA(map[this.IA]);
