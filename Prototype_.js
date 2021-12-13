@@ -6,7 +6,7 @@
 console.clear();
 
 var LIB = {
-  VERSION: "3.00",
+  VERSION: "3.01",
   CSS: "color: #EFE",
   log: function () {
     console.log(`%cPrototype LIB ${LIB.VERSION} loaded`, LIB.CSS);
@@ -249,6 +249,18 @@ Array.prototype.fromBack = function (idx) {
 Array.prototype.unique = function () {
   let set = new Set(this);
   return [...set];
+};
+Array.prototype.midsort = function () {
+  console.assert(this.length % 2 != 0, "Expected array with odd length");
+  let sorted = [];
+  let start = (this.length / 2) | 0;
+  sorted.push(this[start]);
+  for (let i = 1; i <= start; i++) {
+    sorted.push(this[start - i]);
+    sorted.push(this[start + i]);
+  }
+
+  return sorted;
 };
 
 String.prototype.capitalize = function () {

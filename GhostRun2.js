@@ -35,7 +35,7 @@ var INI = {
     SPLASH_TIME: 3000,
 };
 var PRG = {
-    VERSION: "0.04.00",
+    VERSION: "0.04.01",
     NAME: "GhostRun II",
     YEAR: "2021",
     CSS: "color: #239AFF;",
@@ -226,7 +226,6 @@ var HERO = {
 
     },
     splash() {
-        console.log('splash');
         if (HERO.dead) return;
         let grid = Grid.toClass(HERO.MoveState.homeGrid);
         if (!VANISHING.isGridFree(grid)) return;
@@ -532,8 +531,6 @@ var GAME = {
 
 
         if (map[ENGINE.KEY.map.ctrl]) {
-            console.log("CTRL");
-
             HERO.splash();
             AUDIO.Splash.play();
             ENGINE.GAME.keymap[ENGINE.KEY.map.ctrl] = false; //NO repeat

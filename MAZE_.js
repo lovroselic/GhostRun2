@@ -1603,6 +1603,8 @@ class RatArena extends MasterDungeon {
             this.line(startGrid, RAT_ARENA.CORR_LENGTH, UP, MAPDICT.ROOM);
             this.corridor_starts.push(startGrid);
         }
+        this.corridor_starts = this.corridor_starts.midsort();
+
         this.line(bottomLeft, (RAT_ARENA.NCORR - 1) * (RAT_ARENA.CORR_PAD + 1) + 1, RIGHT);
         this.line(bottomLeft.add(UP, RAT_ARENA.CORR_LENGTH - 1), (RAT_ARENA.NCORR - 1) * (RAT_ARENA.CORR_PAD + 1) + 1, RIGHT);
         let tempMaxY = this.maxY;

@@ -6,7 +6,8 @@ var MAP = {
         floor: "RockFloor",
         wall: "BrickWall4",
         energy: 1500,
-        enemy_delay: 3000
+        enemy_delay: 3000,
+        monsters: [],
     },
 };
 
@@ -17,5 +18,12 @@ var SPAWN = {
             GRID_SOLO_FLOOR_OBJECT.add(new Gold(gold));
         }
         GRID_SOLO_FLOOR_OBJECT.manage(MAP[level].DUNGEON);
+    }
+};
+
+var MONSTER = {
+    Ghosty:{
+        speed: 8,
+        ai: 'follower',
     }
 };
