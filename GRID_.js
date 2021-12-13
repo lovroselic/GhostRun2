@@ -185,7 +185,7 @@ var GRID = {
     entity.actor.orientation = entity.actor.getOrientation(
       entity.MoveState.dir
     );
-    if (animate){
+    if (animate) {
       entity.actor.updateAnimation(lapsedTime, entity.actor.orientation);
     }
     entity.MoveState.homeGrid = GRID.coordToGrid(

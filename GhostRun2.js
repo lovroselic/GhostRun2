@@ -20,15 +20,22 @@ var DEBUG = {
     SETTING: true,
     BUTTONS: true,
     VERBOSE: true,
+    finishLevel() {
+        GRID_SOLO_FLOOR_OBJECT.POOL.length = 1;
+        GRID_SOLO_FLOOR_OBJECT.manage();
+        GAME.PAINT.gold();
+    }
 };
 var INI = {
     GOLD: 100,
     HERO_SPEED: 8,
     MINI_PIX: 3,
     SCORE_GOLD: 10,
+    SPLASH_COST: 10,
+    SPLASH_TIME: 3000,
 };
 var PRG = {
-    VERSION: "0.03.00",
+    VERSION: "0.04.00",
     NAME: "GhostRun II",
     YEAR: "2021",
     CSS: "color: #239AFF;",
@@ -213,7 +220,22 @@ var HERO = {
             AUDIO.Pick.play();
         }
         //check if over
+        if (GRID_SOLO_FLOOR_OBJECT.size === 0) {
+            GAME.levelEnd();
+        }
 
+    },
+    splash() {
+        console.log('splash');
+        if (HERO.dead) return;
+        let grid = Grid.toClass(HERO.MoveState.homeGrid);
+        if (!VANISHING.isGridFree(grid)) return;
+        if (HERO.energy > INI.SPLASH_COST) {
+            HERO.energy -= INI.SPLASH_COST;
+            TITLE.energy();
+            let splash = new Splash(grid, new ACTOR('Splash'));
+            VANISHING.add(splash);
+        }
     }
 };
 class Gold {
@@ -225,6 +247,40 @@ class Gold {
     }
     draw() {
         ENGINE.spriteToGrid(this.layer, this.grid, this.sprite);
+    }
+}
+class Splash {
+    constructor(grid, actor) {
+        this.grid = grid;
+        this.actor = actor;
+        GRID.gridToSprite(this.grid, this.actor);
+        this.alignToViewport();
+        this.maxTime = INI.SPLASH_TIME;
+        this.currentTime = this.maxTime;
+        this.alpha = 1.0;
+    }
+    draw() {
+        let CTX = LAYER.splash;
+        CTX.save();
+        CTX.globalAlpha = this.alpha;
+        ENGINE.spriteDraw(
+            "splash",
+            this.actor.vx,
+            this.actor.vy,
+            SPRITE.Splash
+        );
+        CTX.restore();
+    }
+    update(time) {
+        this.alignToViewport();
+        this.currentTime -= time;
+        if (this.currentTime <= 0) {
+            VANISHING.remove(this.id);
+        }
+        this.alpha = Math.max(0.2, (this.currentTime / this.maxTime));
+    }
+    alignToViewport() {
+        ENGINE.VIEWPORT.alignTo(this.actor);
     }
 }
 var GAME = {
@@ -272,6 +328,7 @@ var GAME = {
         MAP[level].DUNGEON = randomDungeon;
         console.log("creating random dungeon", MAP[level].DUNGEON);
         GRID_SOLO_FLOOR_OBJECT.init(MAP[level].DUNGEON);
+        VANISHING.init(MAP[level].DUNGEON);
         SPAWN.gold(level);
         MAP[level].pw = MAP[level].width * ENGINE.INI.GRIDPIX;
         MAP[level].ph = MAP[level].height * ENGINE.INI.GRIDPIX;
@@ -289,12 +346,13 @@ var GAME = {
 
         ENGINE.GAME.ANIMATION.next(GAME.countIn);
     },
-    levelEnd(){
+    levelEnd() {
         console.log("level", GAME.level, "ended.");
         SPEECH.speak("Good job!");
         GAME.levelCompleted = true;
         //
         ENGINE.GAME.ANIMATION.stop();
+        ENGINE.TEXT.centeredText("LEVEL COMPLETED", ENGINE.gameWIDTH, ENGINE.gameHEIGHT / 4);
     },
     countIn: function () {
         if (ENGINE.GAME.stopAnimation) return;
@@ -324,6 +382,7 @@ var GAME = {
         HERO.move(lapsedTime);
         HERO.touchGold();
         GRID_SOLO_FLOOR_OBJECT.manage();
+        VANISHING.manage(lapsedTime);
         //SPLASH.manage();
         //ENEMY.move();
         //ENEMY.collideSplash();
@@ -347,6 +406,7 @@ var GAME = {
         //ENEMY.draw();
         TITLE.radar();
         //SPLASH.draw();
+        GAME.PAINT.splash();
     },
     drawFirstFrame(level) {
         ENGINE.resizeBOX("LEVEL", MAP[level].pw, MAP[level].ph);
@@ -462,10 +522,9 @@ var GAME = {
         var map = ENGINE.GAME.keymap;
 
         //fall throught section
-        /*if (map[ENGINE.KEY.map.F9]) {
-          console.log("finish level");
-          DEBUG.finishLevel();
-        }*/
+        if (map[ENGINE.KEY.map.F9]) {
+            DEBUG.finishLevel();
+        }
         /*if (map[ENGINE.KEY.map.F8]) {
           console.log("kill ,,,,,");
           GAME.lives = 0;
@@ -475,8 +534,8 @@ var GAME = {
         if (map[ENGINE.KEY.map.ctrl]) {
             console.log("CTRL");
 
-            //HERO.splash();
-            //AUDIO.Splash.play();
+            HERO.splash();
+            AUDIO.Splash.play();
             ENGINE.GAME.keymap[ENGINE.KEY.map.ctrl] = false; //NO repeat
         }
 
@@ -504,6 +563,10 @@ var GAME = {
         gold() {
             ENGINE.clearLayer("gold");
             GRID_SOLO_FLOOR_OBJECT.draw();
+        },
+        splash() {
+            ENGINE.clearLayer("splash");
+            VANISHING.draw();
         }
     },
     CI: {

@@ -11,6 +11,11 @@ var IAM = {
             if (obj) obj.draw();
         }
     },
+    update(lapsedTime) {
+        for (let obj of this.POOL) {
+            if (obj) obj.update(lapsedTime);
+        }
+    },
     linkMap(map) {
         this.map = map;
     },
@@ -35,9 +40,43 @@ var IAM = {
             obj.id = index + 1;
         }
     },
+    init(map) {
+        this.POOL = [];
+        this.linkMap(map);
+    },
+    isGridFree(grid){
+        return this.map[this.IA].empty(grid);
+    },
 };
 
 /** Texture grid IA Managers */
+var VANISHING = {
+    POOL: null,
+    map: null,
+    IA: "vanishing_IA",
+    size: null,
+    draw: IAM.draw,
+    linkMap: IAM.linkMap,
+    add: IAM.add,
+    remove: IAM.remove,
+    init: IAM.init,
+    isGridFree: IAM.isGridFree,
+    reIndex: IAM.reIndex,
+    poolToIA(IA) {
+        for (const obj of this.POOL) {
+            IA.next(obj.grid, obj.id);
+        }
+    },
+    update: IAM.update,
+    manage(lapsedTime) {
+        let map = this.map;
+        map[this.IA] = new IndexArray(map.width, map.height, 1, 1);
+        this.reIndex();
+        this.poolToIA(map[this.IA]);
+        this.size = this.POOL.length;
+        this.update(lapsedTime);
+    },
+};
 
 var GRID_SOLO_FLOOR_OBJECT = {
     /*
@@ -51,14 +90,11 @@ var GRID_SOLO_FLOOR_OBJECT = {
     linkMap: IAM.linkMap,
     add: IAM.add,
     remove: IAM.remove,
+    init: IAM.init,
     poolToIA(IA) {
         for (const obj of this.POOL) {
             IA.next(obj.grid, obj.id);
         }
-    },
-    init(map) {
-        this.POOL = [];
-        this.linkMap(map);
     },
     reIndexRequired: false,
     reIndex() {
