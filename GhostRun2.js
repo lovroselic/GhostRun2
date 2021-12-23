@@ -35,7 +35,7 @@ var INI = {
     SPLASH_TIME: 3000,
 };
 var PRG = {
-    VERSION: "0.04.01",
+    VERSION: "0.04.03",
     NAME: "GhostRun II",
     YEAR: "2021",
     CSS: "color: #239AFF;",
@@ -282,6 +282,25 @@ class Splash {
         ENGINE.VIEWPORT.alignTo(this.actor);
     }
 }
+class Monster {
+    constructor(grid, type) {
+        this.grid = Grid.toClass(grid);
+        this.moveState = new MoveState(grid, UP, MAP[GAME.level].DUNGEON.GA);
+        for (const prop in type) {
+            this[prop] = type[prop];
+        }
+        this.actor = new ACTOR(this.name, 0, 0, "front", ASSET[this.name]);
+        GRID.gridToSprite(this.grid, this.actor);
+        this.alignToViewport();
+        this.dirStack = [];
+        this.viewDir = null;
+        this.captured = false;
+        this.released = false;
+    }
+    alignToViewport() {
+        ENGINE.VIEWPORT.alignTo(this.actor);
+    }
+}
 var GAME = {
     start() {
         console.log("GAME started");
@@ -313,6 +332,7 @@ var GAME = {
 
         HERO.startInit();
         ENGINE.GAME.ANIMATION.waitThen(GAME.levelStart, 2);
+        
     },
     levelStart() {
         console.log("level", GAME.level, "started");
@@ -328,7 +348,9 @@ var GAME = {
         console.log("creating random dungeon", MAP[level].DUNGEON);
         GRID_SOLO_FLOOR_OBJECT.init(MAP[level].DUNGEON);
         VANISHING.init(MAP[level].DUNGEON);
+        ENEMY_TG.init(MAP[level].DUNGEON);
         SPAWN.gold(level);
+        SPAWN.monsters(level);
         MAP[level].pw = MAP[level].width * ENGINE.INI.GRIDPIX;
         MAP[level].ph = MAP[level].height * ENGINE.INI.GRIDPIX;
         ENGINE.VIEWPORT.setMax({ x: MAP[level].pw, y: MAP[level].ph });
@@ -339,10 +361,8 @@ var GAME = {
         GAME.CI.reset();
         ENGINE.VIEWPORT.reset();
         HERO.init();
-
         GAME.drawFirstFrame(GAME.level);
-        ENEMY.started = false;
-
+        GAME.ENEMY.started = false;
         ENGINE.GAME.ANIMATION.next(GAME.countIn);
     },
     levelEnd() {
@@ -369,21 +389,19 @@ var GAME = {
     afterCountIn: function () {
         if (ENGINE.GAME.stopAnimation) return;
         ENGINE.clearLayer("text");
-        setTimeout(() => (ENEMY.started = true), MAP[GAME.level].enemy_delay);
-        ENGINE.GAME.ANIMATION.next(GAME.run);
+        setTimeout(() => (GAME.ENEMY.started = true), MAP[GAME.level].enemy_delay);
+        //ENGINE.GAME.ANIMATION.next(GAME.run);
+        GAME.resume();
     },
     run: function (lapsedTime) {
         //console.log(lapsedTime);
-        //GAME.run() template
         if (ENGINE.GAME.stopAnimation) return;
-        //do all game loop stuff here
         GAME.respond();
         HERO.move(lapsedTime);
         HERO.touchGold();
         GRID_SOLO_FLOOR_OBJECT.manage();
         VANISHING.manage(lapsedTime);
-        //SPLASH.manage();
-        //ENEMY.move();
+        GAME.ENEMY.move(lapsedTime);
         //ENEMY.collideSplash();
         //HERO.collideMonster();
         //
@@ -485,16 +503,16 @@ var GAME = {
         GAME.movingText.draw();
     },
     lostFocus() {
-        if (GAME.paused) return;
+        if (GAME.paused || HERO.dead) return;
         GAME.clickPause();
     },
     clickPause() {
-        //if (HERO.dead) return;
+        if (HERO.dead) return;
         $("#pause").trigger("click");
         ENGINE.GAME.keymap[ENGINE.KEY.map.F4] = false;
     },
     pause() {
-        //if (HERO.dead) return;
+        if (HERO.dead) return;
         console.log("%cGAME paused.", PRG.CSS);
         $("#pause").prop("value", "Resume Game [F4]");
         $("#pause").off("click", GAME.pause);
@@ -516,11 +534,14 @@ var GAME = {
         GAME.paused = false;
     },
     respond: function () {
-        //GAME.respond() template
         if (HERO.dead) return;
         var map = ENGINE.GAME.keymap;
 
-        //fall throught section
+        if (map[ENGINE.KEY.map.F4]) {
+            $("#pause").trigger("click");
+            ENGINE.TIMERS.display();
+            ENGINE.GAME.keymap[ENGINE.KEY.map.F4] = false;
+          }
         if (map[ENGINE.KEY.map.F9]) {
             DEBUG.finishLevel();
         }
@@ -573,6 +594,14 @@ var GAME = {
             GAME.CI.now = null;
         }
     },
+    ENEMY: {
+        started: false,
+        move(lapsedTime){
+            if (!GAME.ENEMY.started) return;
+            ENEMY_TG.manage(lapsedTime);
+            console.log("enemy moving");
+        }
+    }
 };
 var TITLE = {
     firstFrame() {

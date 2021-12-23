@@ -47,9 +47,42 @@ var IAM = {
     isGridFree(grid){
         return this.map[this.IA].empty(grid);
     },
+    clearAll() {
+        for (let E of this.POOL) {
+            if (E) this.remove(E.id);
+        }
+    },
+    show(id) {
+        return this.POOL[id - 1];
+    },
 };
 
 /** Texture grid IA Managers */
+var ENEMY_TG = {
+    POOL: null,
+    map: null,
+    IA: "enemy_tg_IA",
+    draw: IAM.draw,
+    linkMap: IAM.linkMap,
+    add: IAM.add,
+    remove: IAM.remove,
+    init: IAM.init,
+    clearAll: IAM.clearAll,
+    show: IAM.show,
+    reIndex: IAM.reIndex,
+    poolToIA(IA) {
+        for (const obj of this.POOL) {
+            IA.next(obj.moveState.homeGrid, obj.id);
+        }
+    },
+    manage(lapsedTime){
+        let map = this.map;
+        map[this.IA] = new IndexArray(map.width, map.height, 1, 1); 
+        this.reIndex();
+        this.poolToIA(map[this.IA]);
+    },
+
+};
 var VANISHING = {
     POOL: null,
     map: null,
@@ -361,14 +394,8 @@ var ENEMY = {
     linkMap: IAM.linkMap,
     add: IAM.add,
     remove: IAM.remove,
-    clearAll() {
-        for (let E of this.POOL) {
-            if (E) this.remove(E.id);
-        }
-    },
-    show(id) {
-        return this.POOL[id - 1];
-    },
+    clearAll: IAM.clearAll,
+    show: IAM.show,
     poolToIA(IA) {
         for (const enemy of this.POOL) {
             if (enemy === null) continue;

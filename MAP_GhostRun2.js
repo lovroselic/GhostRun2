@@ -1,4 +1,12 @@
 console.log("%cMAP for GhostRun2 loaded.", "color: #888");
+var MONSTER = {
+    Ghosty: {
+        speed: 8,
+        ai: 'follower',
+        blind: false,
+        name: "Ghosty"
+    }
+};
 var MAP = {
     1: {
         width: 50,
@@ -7,7 +15,7 @@ var MAP = {
         wall: "BrickWall4",
         energy: 1500,
         enemy_delay: 3000,
-        monsters: [],
+        monsters: [MONSTER.Ghosty],
     },
 };
 
@@ -18,12 +26,15 @@ var SPAWN = {
             GRID_SOLO_FLOOR_OBJECT.add(new Gold(gold));
         }
         GRID_SOLO_FLOOR_OBJECT.manage(MAP[level].DUNGEON);
+    },
+    monsters(level) {
+        for (let [index, monster] of MAP[level].monsters.entries()) {
+            console.log(index, monster);
+            ENEMY_TG.add(new Monster(MAP[level].DUNGEON.corridor_starts[index], monster));
+
+        }
+        console.log("spawning monsters", ENEMY_TG.POOL);
     }
+
 };
 
-var MONSTER = {
-    Ghosty:{
-        speed: 8,
-        ai: 'follower',
-    }
-};

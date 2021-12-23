@@ -136,22 +136,14 @@ var GRID = {
   },
   contTranslatePosition(entity, lapsedTime) {
     let length = (lapsedTime / 1000) * entity.moveSpeed;
-    entity.moveState.pos = entity.moveState.pos.translate(
-      entity.moveState.dir,
-      length
-    );
+    entity.moveState.pos = entity.moveState.pos.translate(entity.moveState.dir, length);
     entity.actor.updateAnimation(lapsedTime);
     return;
   },
   translatePosition(entity, lapsedTime) {
     let length = (lapsedTime / 1000) * entity.moveSpeed;
-    entity.moveState.pos = entity.moveState.pos.translate(
-      entity.moveState.realDir,
-      length
-    );
-    let distance = entity.moveState.pos.EuclidianDistance(
-      entity.moveState.endPos
-    );
+    entity.moveState.pos = entity.moveState.pos.translate(entity.moveState.realDir, length);
+    let distance = entity.moveState.pos.EuclidianDistance(entity.moveState.endPos);
 
     let boundGrid = Grid.toClass(entity.moveState.pos);
     if (
@@ -182,21 +174,14 @@ var GRID = {
   ) {
     entity.actor.x += entity.MoveState.dir.x * entity.speed;
     entity.actor.y += entity.MoveState.dir.y * entity.speed;
-    entity.actor.orientation = entity.actor.getOrientation(
-      entity.MoveState.dir
-    );
+    entity.actor.orientation = entity.actor.getOrientation(entity.MoveState.dir);
     if (animate) {
       entity.actor.updateAnimation(lapsedTime, entity.actor.orientation);
     }
-    entity.MoveState.homeGrid = GRID.coordToGrid(
-      entity.actor.x,
-      entity.actor.y
-    );
+    entity.MoveState.homeGrid = GRID.coordToGrid(entity.actor.x, entity.actor.y);
 
     if (gridArray.outside(entity.MoveState.homeGrid)) {
-      entity.MoveState.homeGrid = gridArray.toOtherSide(
-        entity.MoveState.homeGrid
-      );
+      entity.MoveState.homeGrid = gridArray.toOtherSide(entity.MoveState.homeGrid);
       GRID.gridToSprite(entity.MoveState.homeGrid, entity.actor);
     }
 
