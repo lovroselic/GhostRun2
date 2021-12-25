@@ -4,7 +4,8 @@ var MONSTER = {
         speed: 8,
         ai: 'follower',
         blind: false,
-        name: "Ghosty"
+        name: "Ghosty",
+        fps: 30
     }
 };
 var MAP = {

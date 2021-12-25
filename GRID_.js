@@ -16,7 +16,7 @@ known bugs:
 */
 
 var GRID = {
-  VERSION: "3.02",
+  VERSION: "3.03",
   CSS: "color: #0AA",
   SETTING: {
     ALLOW_CROSS: false,
@@ -31,11 +31,11 @@ var GRID = {
   },
   circleRectangleCollision() { },
   collision(actor, grid) {
-    let actorGrid = actor.MoveState.homeGrid;
+    let actorGrid = actor.moveState.homeGrid;
     return GRID.same(actorGrid, grid);
   },
   spriteToSpriteCollision(actor1, actor2) {
-    return GRID.same(actor1.MoveState.homeGrid, actor2.MoveState.homeGrid);
+    return GRID.same(actor1.moveState.homeGrid, actor2.moveState.homeGrid);
   },
   gridToCenterPX(grid) {
     var x = grid.x * ENGINE.INI.GRIDPIX + Math.floor(ENGINE.INI.GRIDPIX / 2);
@@ -172,17 +172,18 @@ var GRID = {
     onFinish = null,
     animate = true,
   ) {
-    entity.actor.x += entity.MoveState.dir.x * entity.speed;
-    entity.actor.y += entity.MoveState.dir.y * entity.speed;
-    entity.actor.orientation = entity.actor.getOrientation(entity.MoveState.dir);
+    entity.actor.x += entity.moveState.dir.x * entity.speed;
+    entity.actor.y += entity.moveState.dir.y * entity.speed;
+    entity.actor.orientation = entity.actor.getOrientation(entity.moveState.dir);
     if (animate) {
       entity.actor.updateAnimation(lapsedTime, entity.actor.orientation);
     }
-    entity.MoveState.homeGrid = GRID.coordToGrid(entity.actor.x, entity.actor.y);
+    entity.moveState.homeGrid = GRID.coordToGrid(entity.actor.x, entity.actor.y);
+    entity.moveState.pos = entity.moveState.homeGrid;
 
-    if (gridArray.outside(entity.MoveState.homeGrid)) {
-      entity.MoveState.homeGrid = gridArray.toOtherSide(entity.MoveState.homeGrid);
-      GRID.gridToSprite(entity.MoveState.homeGrid, entity.actor);
+    if (gridArray.outside(entity.moveState.homeGrid)) {
+      entity.moveState.homeGrid = gridArray.toOtherSide(entity.moveState.homeGrid);
+      GRID.gridToSprite(entity.moveState.homeGrid, entity.actor);
     }
 
     if (changeView) {
@@ -191,21 +192,21 @@ var GRID = {
 
     ENGINE.VIEWPORT.alignTo(entity.actor);
 
-    if (GRID.same(entity.MoveState.endGrid, GRID.trueToGrid(entity.actor))) {
-      entity.MoveState.moving = false;
-      entity.MoveState.startGrid = entity.MoveState.endGrid;
-      entity.MoveState.homeGrid = entity.MoveState.endGrid;
+    if (GRID.same(entity.moveState.endGrid, GRID.trueToGrid(entity.actor))) {
+      entity.moveState.moving = false;
+      entity.moveState.startGrid = entity.moveState.endGrid;
+      entity.moveState.homeGrid = entity.moveState.endGrid;
 
       if (onFinish) onFinish.call();
     }
     return;
   },
   blockMove(entity, changeView = false) {
-    let newGrid = entity.MoveState.startGrid.add(entity.MoveState.dir);
-    entity.MoveState.reset(newGrid);
+    let newGrid = entity.moveState.startGrid.add(entity.moveState.dir);
+    entity.moveState.reset(newGrid);
     GRID.gridToSprite(newGrid, entity.actor);
     entity.actor.orientation = entity.actor.getOrientation(
-      entity.MoveState.dir
+      entity.moveState.dir
     );
     entity.actor.animateMove(entity.actor.orientation);
 
@@ -216,7 +217,7 @@ var GRID = {
     return;
   },
   teleportToGrid(entity, grid, changeView = false) {
-    entity.MoveState.reset(grid);
+    entity.moveState.reset(grid);
     GRID.gridToSprite(grid, entity.actor);
     if (changeView) {
       ENGINE.VIEWPORT.check(entity.actor);
@@ -558,7 +559,7 @@ class GridArray {
   }
   linkToEntity(entities) {
     for (const entity of entities) {
-      entity.MoveState.gridArray = this;
+      entity.moveState.gridArray = this;
     }
   }
   indexToGrid(index) {
@@ -1165,6 +1166,13 @@ class GridArray {
     for (const grid of path) {
       if (this.isWall(grid)) return false;
     }
+    return true;
+  }
+  lookForGrid(startGrid, dir, lookGrid) {
+    do {
+      startGrid = startGrid.add(dir);
+      if (this.isWall(startGrid)) return false;
+    } while (!startGrid.same(lookGrid));
     return true;
   }
 }

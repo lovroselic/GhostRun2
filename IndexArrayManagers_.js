@@ -44,7 +44,7 @@ var IAM = {
         this.POOL = [];
         this.linkMap(map);
     },
-    isGridFree(grid){
+    isGridFree(grid) {
         return this.map[this.IA].empty(grid);
     },
     clearAll() {
@@ -75,11 +75,16 @@ var ENEMY_TG = {
             IA.next(obj.moveState.homeGrid, obj.id);
         }
     },
-    manage(lapsedTime){
+    manage(lapsedTime, reference) {
         let map = this.map;
-        map[this.IA] = new IndexArray(map.width, map.height, 1, 1); 
+        map[this.IA] = new IndexArray(map.width, map.height, 1, 1);
         this.reIndex();
         this.poolToIA(map[this.IA]);
+        GRID.calcDistancesBFS_A(reference.moveState.pos, map);
+        for (const enemy of this.POOL) {
+            if (enemy === null) continue;
+            enemy.manage(lapsedTime, map[this.IA]);
+        }
     },
 
 };
@@ -114,7 +119,7 @@ var VANISHING = {
 var GRID_SOLO_FLOOR_OBJECT = {
     /*
     expects simple static objects withouot moveState 
-    */    
+    */
     POOL: null,
     map: null,
     IA: "grid_solo_floor_object_IA",
@@ -400,12 +405,8 @@ var ENEMY = {
         for (const enemy of this.POOL) {
             if (enemy === null) continue;
             for (const dir of ENGINE.corners) {
-                let x =
-                    enemy.moveState.pos.x +
-                    dir.x * (enemy.actor.orientationW / 2 / ENGINE.INI.GRIDPIX);
-                let y =
-                    enemy.moveState.pos.y +
-                    dir.y * (enemy.actor.orientationH / 2 / ENGINE.INI.GRIDPIX);
+                let x = enemy.moveState.pos.x + dir.x * (enemy.actor.orientationW / 2 / ENGINE.INI.GRIDPIX);
+                let y = enemy.moveState.pos.y + dir.y * (enemy.actor.orientationH / 2 / ENGINE.INI.GRIDPIX);
                 let pos = new Grid(x, y);
                 if (!IA.has(pos, enemy.id)) {
                     IA.next(pos, enemy.id);

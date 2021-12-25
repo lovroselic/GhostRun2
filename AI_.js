@@ -59,12 +59,7 @@ var AI = {
       return this.hunt(enemy);
     }
 
-    let Astar = enemy.parent.map.GA.findPath_AStar_fast(
-      Grid.toClass(enemy.moveState.pos),
-      goal,
-      [MAPDICT.WALL],
-      "exclude"
-    );
+    let Astar = enemy.parent.map.GA.findPath_AStar_fast(Grid.toClass(enemy.moveState.pos), goal, [MAPDICT.WALL], "exclude");
 
     if (Astar === null) {
       return this.immobile();
@@ -78,11 +73,7 @@ var AI = {
     return directions;
   },
   follower(enemy, ARG) {
-    return this.crossroader(
-      enemy,
-      ARG.playerPosition,
-      ARG.currentPlayerDir.mirror()
-    );
+    return this.crossroader(enemy, ARG.playerPosition, ARG.currentPlayerDir.mirror());
   },
   advancer(enemy, ARG) {
     return this.crossroader(enemy, ARG.playerPosition, ARG.currentPlayerDir);
@@ -118,7 +109,7 @@ var AI = {
     }
     if (Astar === 0) {
       if (enemy.behaviour.complex("passive")) {
-        enemy.behaviour.cycle("passive"); 
+        enemy.behaviour.cycle("passive");
         enemy.behaviour.strategy = enemy.behaviour.getPassive();
         return this.immobile();
       } else {
