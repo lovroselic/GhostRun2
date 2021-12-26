@@ -35,7 +35,7 @@ var INI = {
     SPLASH_TIME: 3000,
 };
 var PRG = {
-    VERSION: "0.04.06",
+    VERSION: "0.05.00",
     NAME: "GhostRun II",
     YEAR: "2021",
     CSS: "color: #239AFF;",
@@ -333,10 +333,9 @@ class Monster {
             this.actor.animateMove(this.actor.orientation);
         } else {
             if (this.moveState.moving) {
-                // queue
-                if (this.id >= Math.max(IA.unroll(this.moveState.homeGrid))) {
+                if (this.id >= Math.max(...IA.unroll(this.moveState.homeGrid))) {
                     GRID.translateMove(this, lapsedTime, GA);
-                } else console.log(this, 'waiting');
+                }
             } else {
                 this.look();
                 if (this.dirStack.length === 0) {

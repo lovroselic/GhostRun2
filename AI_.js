@@ -50,7 +50,7 @@ var AI = {
     return [NOWAY];
   },
   hunt(enemy) {
-    let nodeMap = enemy.parent.map.nodeMap;
+    let nodeMap = enemy.parent.map.GA.nodeMap;
     let grid = Grid.toClass(enemy.moveState.pos);
     let goto = nodeMap[grid.x][grid.y].goto || NOWAY;
     return [goto];
@@ -81,9 +81,9 @@ var AI = {
     return this.crossroader(enemy, ARG.playerPosition, ARG.currentPlayerDir, ARG.block);
   },
   runAway(enemy) {
-    let nodeMap = enemy.parent.map.nodeMap;
+    let nodeMap = enemy.parent.map.GA.nodeMap;
     let grid = Grid.toClass(enemy.moveState.pos);
-    let directions = enemy.parent.map.GA.getDirectionsFromNodeMap(grid,nodeMap,nodeMap[grid.x][grid.y].goto);
+    let directions = enemy.parent.map.GA.getDirectionsFromNodeMap(grid, nodeMap, nodeMap[grid.x][grid.y].goto);
     directions.push(NOWAY);
     let distances = [];
     for (const dir of directions) {
@@ -162,7 +162,7 @@ var AI = {
     let map = enemy.parent.map;
     let grid = Grid.toClass(enemy.moveState.pos);
     let playerGrid = Grid.toClass(ARG.playerPosition);
-    let directions = map.GA.getDirectionsFromNodeMap(grid, map.nodeMap);
+    let directions = map.GA.getDirectionsFromNodeMap(grid, map.GA.nodeMap);
     let possible = [];
     let max = [];
     let curMax = 0;

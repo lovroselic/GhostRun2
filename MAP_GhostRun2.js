@@ -6,6 +6,13 @@ var MONSTER = {
         blind: false,
         name: "Ghosty",
         fps: 30
+    },
+    ZombieGirl: {
+        speed: 8,
+        ai: 'advancer',
+        blind: false,
+        name: "ZombieGirl",
+        fps: 30
     }
 };
 var MAP = {
@@ -16,7 +23,7 @@ var MAP = {
         wall: "BrickWall4",
         energy: 1500,
         enemy_delay: 3000,
-        monsters: [MONSTER.Ghosty],
+        monsters: [MONSTER.Ghosty, MONSTER.ZombieGirl],
     },
 };
 

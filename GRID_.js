@@ -16,7 +16,7 @@ known bugs:
 */
 
 var GRID = {
-  VERSION: "3.03",
+  VERSION: "3.03.DEV",
   CSS: "color: #0AA",
   SETTING: {
     ALLOW_CROSS: false,
@@ -280,16 +280,13 @@ var GRID = {
   calcDistancesBFS_BH(start, dungeon) {
     dungeon.setNodeMap();
     let BH = new BinHeap("distance");
-    dungeon.nodeMap[start.x][start.y].distance = 0;
-    dungeon.nodeMap[start.x][start.y].goto = new Vector(0, 0);
-    BH.insert(dungeon.nodeMap[start.x][start.y]);
+    dungeon.GA.nodeMap[start.x][start.y].distance = 0;
+    dungeon.GA.nodeMap[start.x][start.y].goto = new Vector(0, 0);
+    BH.insert(dungeon.GA.nodeMap[start.x][start.y]);
     while (BH.size() > 0) {
       let node = BH.extractMax();
       for (let D = 0; D < ENGINE.directions.length; D++) {
-        let nextNode =
-          dungeon.nodeMap[node.grid.x + ENGINE.directions[D].x][
-          node.grid.y + ENGINE.directions[D].y
-          ];
+        let nextNode = dungeon.GA.nodeMap[node.grid.x + ENGINE.directions[D].x][node.grid.y + ENGINE.directions[D].y];
         if (nextNode) {
           if (nextNode.distance > node.distance + 1) {
             nextNode.distance = node.distance + 1;
@@ -304,20 +301,16 @@ var GRID = {
   calcDistancesBFS_A(start, dungeon) {
     dungeon.setNodeMap();
     let Q = new NodeQ("distance");
-    dungeon.nodeMap[start.x][start.y].distance = 0;
-    dungeon.nodeMap[start.x][start.y].goto = new Vector(0, 0);
-    Q.queueSimple(dungeon.nodeMap[start.x][start.y]);
+    dungeon.GA.nodeMap[start.x][start.y].distance = 0;
+    dungeon.GA.nodeMap[start.x][start.y].goto = new Vector(0, 0);
+    Q.queueSimple(dungeon.GA.nodeMap[start.x][start.y]);
     while (Q.size() > 0) {
       let node = Q.dequeue();
 
       for (let D = 0; D < ENGINE.directions.length; D++) {
-        let x =
-          (node.grid.x + ENGINE.directions[D].x + dungeon.width) %
-          dungeon.width;
-        let y =
-          (node.grid.y + ENGINE.directions[D].y + dungeon.height) %
-          dungeon.height;
-        let nextNode = dungeon.nodeMap[x][y];
+        let x = (node.grid.x + ENGINE.directions[D].x + dungeon.width) % dungeon.width;
+        let y = (node.grid.y + ENGINE.directions[D].y + dungeon.height) % dungeon.height;
+        let nextNode = dungeon.GA.nodeMap[x][y];
 
         if (nextNode) {
           if (nextNode.distance > node.distance + 1) {

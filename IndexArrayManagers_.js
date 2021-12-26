@@ -77,7 +77,7 @@ var ENEMY_TG = {
     },
     manage(lapsedTime, reference) {
         let map = this.map;
-        map[this.IA] = new IndexArray(map.width, map.height, 1, 1);
+        map[this.IA] = new IndexArray(map.width, map.height, 4, 4);
         this.reIndex();
         this.poolToIA(map[this.IA]);
         GRID.calcDistancesBFS_A(reference.moveState.pos, map);

@@ -539,21 +539,8 @@ class MasterDungeon {
         this.obstacles.clear();
         this.obstacles = [...arguments].flat().filter((el) => el !== null);
     }
-    setNodeMap(where="nodeMap") {
-        let map = [];
-        for (let x = 0; x < this.width; x++) {
-            map[x] = [];
-            for (let y = 0; y < this.height; y++) {
-                if (this.GA.isMazeWall(new Grid(x, y))) {
-                    map[x][y] = null;
-                } else {
-                    map[x][y] = new PathNode(x, y);
-                }
-            }
-        }
-        this.obstacles.forEach((obj) => (map[obj.x][obj.y] = null));
-        this[where] = map;
-        return map;
+    setNodeMap() {
+        return this.GA.setNodeMap("nodeMap", [MAPDICT.WALL], "exclude", this.obstacles);
     }
     gridDistance(grid) {
         if (!this.nodeMap) return -1;
@@ -1704,7 +1691,7 @@ var ARENA = {
     }
 };
 var DUNGEON = {
-    VERSION: "3.02",
+    VERSION: "3.03.DEV",
     CSS: "color: #f4ee42",
     REFUSE_CONNECTION_TO_ROOM: true,
     LIMIT_ROOMS: false,
