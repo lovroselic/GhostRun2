@@ -35,7 +35,7 @@ var INI = {
     SPLASH_TIME: 3000,
 };
 var PRG = {
-    VERSION: "0.04.05",
+    VERSION: "0.04.06",
     NAME: "GhostRun II",
     YEAR: "2021",
     CSS: "color: #239AFF;",
@@ -297,8 +297,6 @@ class Monster {
         ENGINE.VIEWPORT.alignTo(this.actor);
     }
     look() {
-        console.log(this,"looking");
-        //if observed, then dirStack is set here
         let GA = this.moveState.gridArray;
         if (this.blind) return null;
         var heroDir = this.moveState.homeGrid.absDirection(HERO.moveState.homeGrid);
@@ -307,14 +305,14 @@ class Monster {
         if (dir.same(this.moveState.dir.mirror())) return null;
         if (GA.lookForGrid(this.moveState.homeGrid, dir, HERO.moveState.homeGrid)) {
             this.dirStack = [dir];
-            console.log(this, "sees");
             return true;
         }
         return null;
     }
     makeMove() {
-        console.log(this, 'making move');
-        this.moveState.dir = this.dirStack.shift();
+        let dir = this.dirStack.shift();
+        if (GRID.same(dir, NOWAY)) return;
+        this.moveState.dir = dir;
         this.moveState.next(this.moveState.dir);
     }
     setViewDir() {
@@ -344,10 +342,10 @@ class Monster {
                 if (this.dirStack.length === 0) {
                     let ARG = {
                         playerPosition: HERO.moveState.homeGrid,
-                        currentPlayerDir: HERO.moveState.dir
+                        currentPlayerDir: HERO.moveState.dir,
+                        block: [this.moveState.homeGrid.add(this.moveState.dir.mirror())]
                     };
                     this.dirStack = AI[this.ai](this, ARG);
-                    console.log("new stack", this.dirStack);
                 }
                 this.makeMove();
             }
@@ -964,7 +962,6 @@ var TITLE = {
         );
 
         //draw gold
-
         CTX.fillStyle = "yellow";
         for (let q = 0; q < GRID_SOLO_FLOOR_OBJECT.size; q++) {
             if (GRID_SOLO_FLOOR_OBJECT.POOL[q] === null) continue;
@@ -976,18 +973,16 @@ var TITLE = {
             );
         }
 
-
         //draw enemy
-        /*
         CTX.fillStyle = "red";
-        for (let q = 0; q < ENEMY.pool.length; q++) {
+        let pool = ENEMY_TG.POOL;
+        for (let q = 0; q < pool.length; q++) {
           CTX.pixelAt(
-            orx + ENEMY.pool[q].moveState.homeGrid.x * INI.MINI_PIX,
-            ory + ENEMY.pool[q].moveState.homeGrid.y * INI.MINI_PIX,
+            orx + pool[q].moveState.homeGrid.x * INI.MINI_PIX,
+            ory + pool[q].moveState.homeGrid.y * INI.MINI_PIX,
             INI.MINI_PIX
           );
         }
-        */
     },
 };
 // -- main --

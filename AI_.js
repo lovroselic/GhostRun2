@@ -26,9 +26,10 @@ knownBugs:
 /////////////////////////////////////////
 
 var AI = {
-  VERSION: "1.00",
+  VERSION: "1.01.DEV",
   CSS: "color: silver",
   referenceEntity: null,
+  immobileWander: true,
   initialize(ref) {
     this.referenceEntity = ref;
   },
@@ -44,7 +45,8 @@ var AI = {
       return [enemy.moveState.dir.mirror()];
     }
   },
-  immobile() {
+  immobile(enemy) {
+    if (AI.immobileWander) return this.wanderer(enemy);
     return [NOWAY];
   },
   hunt(enemy) {
@@ -53,16 +55,16 @@ var AI = {
     let goto = nodeMap[grid.x][grid.y].goto || NOWAY;
     return [goto];
   },
-  crossroader(enemy, playerPosition, dir) {
+  crossroader(enemy, playerPosition, dir, block) {
     let goal = enemy.parent.map.GA.findNextCrossroad(playerPosition, dir);
     if (goal === null) {
       return this.hunt(enemy);
     }
 
-    let Astar = enemy.parent.map.GA.findPath_AStar_fast(Grid.toClass(enemy.moveState.pos), goal, [MAPDICT.WALL], "exclude");
+    let Astar = enemy.parent.map.GA.findPath_AStar_fast(Grid.toClass(enemy.moveState.pos), goal, [MAPDICT.WALL], "exclude", block);
 
     if (Astar === null) {
-      return this.immobile();
+      return this.immobile(enemy);
     }
     if (Astar === 0) {
       return this.hunt(enemy);
@@ -73,19 +75,15 @@ var AI = {
     return directions;
   },
   follower(enemy, ARG) {
-    return this.crossroader(enemy, ARG.playerPosition, ARG.currentPlayerDir.mirror());
+    return this.crossroader(enemy, ARG.playerPosition, ARG.currentPlayerDir.mirror(), ARG.block);
   },
   advancer(enemy, ARG) {
-    return this.crossroader(enemy, ARG.playerPosition, ARG.currentPlayerDir);
+    return this.crossroader(enemy, ARG.playerPosition, ARG.currentPlayerDir, ARG.block);
   },
   runAway(enemy) {
     let nodeMap = enemy.parent.map.nodeMap;
     let grid = Grid.toClass(enemy.moveState.pos);
-    let directions = enemy.parent.map.GA.getDirectionsFromNodeMap(
-      grid,
-      nodeMap,
-      nodeMap[grid.x][grid.y].goto
-    );
+    let directions = enemy.parent.map.GA.getDirectionsFromNodeMap(grid,nodeMap,nodeMap[grid.x][grid.y].goto);
     directions.push(NOWAY);
     let distances = [];
     for (const dir of directions) {

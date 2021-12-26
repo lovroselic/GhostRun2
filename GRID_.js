@@ -770,7 +770,7 @@ class GridArray {
     if (this.isOutOfBounds(next)) return false;
     return this.value(next, value);
   }
-  setNodeMap(where = "nodeMap", path = [0], type = "value") {
+  setNodeMap(where = "nodeMap", path = [0], type = "value", block = []) {
     let map = [];
     for (let x = 0; x < this.width; x++) {
       map[x] = [];
@@ -798,6 +798,10 @@ class GridArray {
         }
       }
     }
+    /*for (let grid of block) {
+      map[grid.x][grid.y] = null;
+    }*/
+    block.forEach((obj) => (map[obj.x][obj.y] = null));
     this[where] = map;
     return map;
   }
@@ -856,7 +860,7 @@ class GridArray {
     }
     return NODES;
   }
-  findPath_AStar_fast(start, finish, path = [0], type = "value") {
+  findPath_AStar_fast(start, finish, path = [0], type = "value", block = []) {
     /** 
     return
     null: no path exist
@@ -869,7 +873,7 @@ class GridArray {
     }
 
     var Q = new NodeQ("priority");
-    let NodeMap = this.setNodeMap("AStar", path, type);
+    let NodeMap = this.setNodeMap("AStar", path, type, block);
 
     NodeMap[start.x][start.y].distance = start.distance(finish);
     NodeMap[start.x][start.y].path = 0;
@@ -879,10 +883,8 @@ class GridArray {
     while (Q.size() > 0) {
       let node = Q.dequeue();
       for (let D = 0; D < ENGINE.directions.length; D++) {
-        let x =
-          (node.grid.x + ENGINE.directions[D].x + this.width) % this.width;
-        let y =
-          (node.grid.y + ENGINE.directions[D].y + this.height) % this.height;
+        let x = (node.grid.x + ENGINE.directions[D].x + this.width) % this.width;
+        let y = (node.grid.y + ENGINE.directions[D].y + this.height) % this.height;
 
         let nextNode = NodeMap[x][y];
         if (nextNode) {
@@ -928,11 +930,7 @@ class GridArray {
         return selected;
       }
 
-      let dirs = this.getDirectionsFromNodeMap(
-        selected.grid,
-        NodeMap,
-        allowCross
-      );
+      let dirs = this.getDirectionsFromNodeMap(selected.grid, NodeMap, allowCross);
       for (let q = 0; q < dirs.length; q++) {
         let HG = selected.grid.add(dirs[q]);
 
@@ -946,14 +944,7 @@ class GridArray {
         history.push(HG);
         let I_stack = [].concat(selected.stack);
         I_stack.push(dirs[q]);
-        let fork = new Node(
-          HG,
-          finish,
-          I_stack,
-          selected.path + 1,
-          history,
-          iteration
-        );
+        let fork = new Node(HG, finish, I_stack, selected.path + 1, history, iteration);
         if (fork.dist === 0) {
           fork.status = "Found";
           return fork;

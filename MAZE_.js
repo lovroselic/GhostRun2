@@ -539,7 +539,7 @@ class MasterDungeon {
         this.obstacles.clear();
         this.obstacles = [...arguments].flat().filter((el) => el !== null);
     }
-    setNodeMap(where = "nodeMap") {
+    setNodeMap(where="nodeMap") {
         let map = [];
         for (let x = 0; x < this.width; x++) {
             map[x] = [];
@@ -1601,7 +1601,7 @@ class RatArena extends MasterDungeon {
         for (let c = 0; c < RAT_ARENA.NCORR; c++) {
             let startGrid = new Grid(bottomLeft.x + c * (RAT_ARENA.CORR_PAD + 1), bottomLeft.y);
             this.line(startGrid, RAT_ARENA.CORR_LENGTH, UP, MAPDICT.ROOM);
-            this.corridor_starts.push(startGrid);
+            this.corridor_starts.push(startGrid.add(UP));
         }
         this.corridor_starts = this.corridor_starts.midsort();
 
