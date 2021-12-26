@@ -20,6 +20,7 @@ var DEBUG = {
     SETTING: true,
     BUTTONS: true,
     VERBOSE: true,
+    PAINT_TRAIL: true,
     finishLevel() {
         GRID_SOLO_FLOOR_OBJECT.POOL.length = 1;
         GRID_SOLO_FLOOR_OBJECT.manage();
@@ -35,7 +36,7 @@ var INI = {
     SPLASH_TIME: 3000,
 };
 var PRG = {
-    VERSION: "0.05.00",
+    VERSION: "0.05.01",
     NAME: "GhostRun II",
     YEAR: "2021",
     CSS: "color: #239AFF;",
@@ -107,14 +108,14 @@ var PRG = {
         $(ENGINE.gameWindowId).width(ENGINE.gameWIDTH + ENGINE.sideWIDTH + 4);
         ENGINE.addBOX("TITLE", ENGINE.titleWIDTH, ENGINE.titleHEIGHT, ["title"], null);
         ENGINE.addBOX("ROOM", ENGINE.gameWIDTH, ENGINE.gameHEIGHT,
-            ["background", "splash", "actors", "explosion", "text", "animation", "button", "click"],
+            ["background", "splash", "actors", "explosion", "text", "animation", "FPS", "button", "click"],
             "side");
         ENGINE.addBOX("SIDE", ENGINE.sideWIDTH, ENGINE.gameHEIGHT,
             ["sideback", "score", "energy", "lives", "stage", "radar"],
             "fside");
         ENGINE.addBOX("DOWN", ENGINE.bottomWIDTH, ENGINE.bottomHEIGHT, ["bottom", "bottomText"], null);
 
-        ENGINE.addBOX("LEVEL", ENGINE.gameWIDTH, ENGINE.gameHEIGHT, ["floor", "wall", "gold", "grid", "coord", "player"], null);
+        ENGINE.addBOX("LEVEL", ENGINE.gameWIDTH, ENGINE.gameHEIGHT, ["floor", "wall", "gold", "grid", "coord", "debug", "player"], null);
         //$("#LEVEL").addClass("hidden");
     },
     start() {
@@ -163,6 +164,11 @@ var HERO = {
         if (HERO.dead) return;
         ENGINE.spriteDraw("actors", HERO.actor.vx, HERO.actor.vy, HERO.actor.sprite());
         ENGINE.layersToClear.add("actors");
+        if (DEBUG.PAINT_TRAIL) {
+            let CTX = LAYER.player;
+            CTX.fillStyle = "blue";
+            CTX.pixelAt(HERO.actor.x, HERO.actor.y, 2);
+        }
     },
     move(lapsedTime) {
         if (HERO.dead) return;
@@ -353,6 +359,11 @@ class Monster {
     draw() {
         this.alignToViewport();
         ENGINE.spriteDraw("actors", this.actor.vx, this.actor.vy, this.actor.sprite());
+        if (DEBUG.PAINT_TRAIL) {
+            let CTX = LAYER.debug;
+            CTX.fillStyle = "red";
+            CTX.pixelAt(this.actor.x, this.actor.y, 2);
+        }
     }
 }
 var GAME = {
@@ -386,6 +397,7 @@ var GAME = {
 
         HERO.startInit();
         AI.initialize(HERO);
+        GAME.fps = new FPS_measurement();
         ENGINE.GAME.ANIMATION.waitThen(GAME.levelStart, 2);
 
     },
@@ -460,7 +472,7 @@ var GAME = {
         //ENEMY.collideSplash();
         //HERO.collideMonster();
         //
-        GAME.frameDraw();
+        GAME.frameDraw(lapsedTime);
     },
     updateVieport: function () {
         if (!ENGINE.VIEWPORT.changed) return;
@@ -470,7 +482,7 @@ var GAME = {
         //
         ENGINE.VIEWPORT.changed = false;
     },
-    frameDraw: function () {
+    frameDraw: function (lapsedTime) {
         ENGINE.clearLayerStack();
         GAME.updateVieport();
         //EXPLOSIONS.draw();
@@ -479,6 +491,10 @@ var GAME = {
         TITLE.radar();
         //SPLASH.draw();
         GAME.PAINT.splash();
+
+        if (DEBUG.FPS) {
+            GAME.FPS(lapsedTime);
+        }
     },
     drawFirstFrame(level) {
         ENGINE.resizeBOX("LEVEL", MAP[level].pw, MAP[level].ph);
@@ -632,6 +648,14 @@ var GAME = {
             return;
         }
         return;
+    },
+    FPS(lapsedTime) {
+        let CTX = LAYER.FPS;
+        CTX.fillStyle = "white";
+        ENGINE.clearLayer("FPS");
+        let fps = 1000 / lapsedTime || 0;
+        GAME.fps.update(fps);
+        CTX.fillText(GAME.fps.getFps(), 5, 10);
     },
     PAINT: {
         gold() {
@@ -976,11 +1000,11 @@ var TITLE = {
         CTX.fillStyle = "red";
         let pool = ENEMY_TG.POOL;
         for (let q = 0; q < pool.length; q++) {
-          CTX.pixelAt(
-            orx + pool[q].moveState.homeGrid.x * INI.MINI_PIX,
-            ory + pool[q].moveState.homeGrid.y * INI.MINI_PIX,
-            INI.MINI_PIX
-          );
+            CTX.pixelAt(
+                orx + pool[q].moveState.homeGrid.x * INI.MINI_PIX,
+                ory + pool[q].moveState.homeGrid.y * INI.MINI_PIX,
+                INI.MINI_PIX
+            );
         }
     },
 };

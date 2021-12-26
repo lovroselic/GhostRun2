@@ -185,7 +185,9 @@ var AI = {
 
   //to do
   prophet(enemy, ARG) { },
-  shadower() { }
+  shadower(enemy, ARG) {
+    
+   }
 };
 class Behaviour {
   constructor(

@@ -332,10 +332,10 @@ class Grid {
     distance = Math.floor(Math.sqrt(distance));
     return distance;
   }
-  directionSolutions(vector) {
+  directionSolutions(grid) {
     let solutions = [];
-    let dir = this.direction(vector);
-    let absDir = this.absDirection(vector);
+    let dir = this.direction(grid);
+    let absDir = this.absDirection(grid);
     let split = dir.ortoSplit();
     solutions.push(new Direction(split[0], Math.abs(absDir.x)));
     solutions.push(new Direction(split[1], Math.abs(absDir.y)));
@@ -631,7 +631,6 @@ class Vector {
 }
 class Direction {
   constructor(vector, len, weight) {
-    //this.dir = vector;
     this.dir = new Vector(vector.x, vector.y);
     this.len = len || 1;
     this.weight = weight || 0;
