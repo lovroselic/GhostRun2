@@ -182,12 +182,43 @@ var AI = {
       return [max.chooseRandom()];
     } else return this.immobile();
   },
+  shadower(enemy, ARG) {
+    let directions = enemy.parent.map.GA.getDirectionsIfNot(
+      Grid.toClass(enemy.moveState.pos),
+      MAPDICT.WALL,
+      enemy.moveState.dir.mirror()
+    );
+    if (directions.length === 1) return [directions[0]];
+    if (enemy.moveState.goingAway(ARG.MS) || enemy.moveState.towards(ARG.MS, enemy.tolerance)) {
+      //if going away or not coming towards, take HERo's dir if possible
+      if (ARG.MS.dir.isInAt(directions) !== -1) {
+        return [ARG.MS.dir];
+      }
+    } else {
+      //else take opposite dir
+      let contra = ARG.MS.dir.mirror();
+      if (contra.isInAt(directions) !== -1) {
+        return [contra];
+      }
+    }
+    //remaining: take direction in which the distance is largest
+    let solutions = enemy.moveState.endGrid.directionSolutions(ARG.MS.homeGrid);
+    let selected = solve();
+    if (selected) return [selected];
+    return [directions.chooseRandom()];
+
+    function solve() {
+      for (let q = 0; q < 2; q++) {
+        if (solutions[q].dir.isInAt(directions) !== -1)
+          return solutions[q].dir;
+      }
+      return null;
+    }
+  },
 
   //to do
   prophet(enemy, ARG) { },
-  shadower(enemy, ARG) {
-    
-   }
+
 };
 class Behaviour {
   constructor(

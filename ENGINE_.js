@@ -30,7 +30,7 @@ var DownRight = new Vector(1, 1);
 var DownLeft = new Vector(-1, 1);
 
 var ENGINE = {
-  VERSION: "3.02.DEV",
+  VERSION: "3.03.DEV",
   CSS: "color: #0FA",
   INI: {
     ANIMATION_INTERVAL: 16,

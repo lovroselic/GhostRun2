@@ -36,7 +36,7 @@ var INI = {
     SPLASH_TIME: 3000,
 };
 var PRG = {
-    VERSION: "0.05.01",
+    VERSION: "0.05.02",
     NAME: "GhostRun II",
     YEAR: "2021",
     CSS: "color: #239AFF;",
@@ -115,7 +115,7 @@ var PRG = {
             "fside");
         ENGINE.addBOX("DOWN", ENGINE.bottomWIDTH, ENGINE.bottomHEIGHT, ["bottom", "bottomText"], null);
 
-        ENGINE.addBOX("LEVEL", ENGINE.gameWIDTH, ENGINE.gameHEIGHT, ["floor", "wall", "gold", "grid", "coord", "debug", "player"], null);
+        ENGINE.addBOX("LEVEL", ENGINE.gameWIDTH, ENGINE.gameHEIGHT, ["floor", "wall", "gold", "grid", "coord", "player", "debug",], null);
         //$("#LEVEL").addClass("hidden");
     },
     start() {
@@ -348,7 +348,8 @@ class Monster {
                     let ARG = {
                         playerPosition: HERO.moveState.homeGrid,
                         currentPlayerDir: HERO.moveState.dir,
-                        block: [this.moveState.homeGrid.add(this.moveState.dir.mirror())]
+                        block: [this.moveState.homeGrid.add(this.moveState.dir.mirror())],
+                        MS: HERO.moveState
                     };
                     this.dirStack = AI[this.ai](this, ARG);
                 }

@@ -5,21 +5,24 @@ var MONSTER = {
         ai: 'follower',
         blind: false,
         name: "Ghosty",
-        fps: 30
+        fps: 30,
+        tolerance: 0
     },
     ZombieGirl: {
         speed: 8,
         ai: 'advancer',
         blind: false,
         name: "ZombieGirl",
-        fps: 30
+        fps: 30,
+        tolerance: 0
     },
-    Death: {
+    Death2: {
         speed: 8,
-        ai: 'advancer',
+        ai: 'shadower',
         blind: false,
         name: "Death2",
-        fps: 30
+        fps: 30,
+        tolerance: 5
     }
 };
 var MAP = {
@@ -31,7 +34,7 @@ var MAP = {
         energy: 1500,
         enemy_delay: 3000,
         //monsters: [MONSTER.Ghosty, MONSTER.ZombieGirl],
-        monsters: [MONSTER.Death],
+        monsters: [MONSTER.Death2],
     },
 };
 
