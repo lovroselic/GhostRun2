@@ -36,7 +36,7 @@ var INI = {
     SPLASH_TIME: 3000,
 };
 var PRG = {
-    VERSION: "0.06.00",
+    VERSION: "0.06.01",
     NAME: "GhostRun II",
     YEAR: "2021",
     CSS: "color: #239AFF;",
@@ -326,14 +326,11 @@ class Monster {
     }
     manage(lapsedTime, IA) {
         let GA = this.moveState.gridArray;
-        //viewDir set when collide with splash
         if (this.captured) {
-            console.log(this, "captured");
             this.viewDir = this.viewDir.ccw();
             this.actor.orientation = this.actor.getOrientation(this.viewDir);
-            this.actor.animateMove(this.actor.orientation);
+            this.actor.updateAnimation(lapsedTime, this.actor.orientation);
         } else if (this.released) {
-            console.log(this, "released");
             this.viewDir = null;
             this.actor.orientation = this.actor.getOrientation(this.moveState.dir);
             this.actor.animateMove(this.actor.orientation);
@@ -470,7 +467,7 @@ var GAME = {
         GRID_SOLO_FLOOR_OBJECT.manage();
         VANISHING.manage(lapsedTime);
         GAME.ENEMY.move(lapsedTime);
-        //ENEMY.collideSplash();
+        GAME.ENEMY.collideSplash();
         //HERO.collideMonster();
         //
         GAME.frameDraw(lapsedTime);
@@ -684,6 +681,21 @@ var GAME = {
         draw() {
             ENGINE.layersToClear.add("actors");
             ENEMY_TG.draw();
+        },
+        collideSplash() {
+            for (const enemy of ENEMY_TG.POOL) {
+                if (enemy.released) {
+                    enemy.released = false;
+                } else if (enemy.captured) {
+                    enemy.captured = false;
+                    enemy.released = true;
+                }
+                let hit = enemy.parent.map[VANISHING.IA].unroll(enemy.moveState.homeGrid).sum();
+                if (hit > 0){
+                    enemy.captured = true;
+                    if (!enemy.viewDir) enemy.setViewDir();
+                }
+            }
         }
     }
 };

@@ -42,7 +42,8 @@ var MAP = {
         energy: 1500,
         enemy_delay: 3000,
         //monsters: [MONSTER.Ghosty, MONSTER.ZombieGirl, MONSTER.Death2],
-        monsters: [MONSTER.Skeleton],
+        monsters: [MONSTER.Ghosty, MONSTER.ZombieGirl, MONSTER.Death2, MONSTER.Skeleton],
+        //monsters: [MONSTER.Skeleton],
         //monsters: [MONSTER.Death2],
     },
 };
@@ -57,7 +58,6 @@ var SPAWN = {
     },
     monsters(level) {
         for (let [index, monster] of MAP[level].monsters.entries()) {
-            console.log(index, monster);
             ENEMY_TG.add(new Monster(MAP[level].DUNGEON.corridor_starts[index], monster));
 
         }
