@@ -23,6 +23,14 @@ var MONSTER = {
         name: "Death2",
         fps: 30,
         tolerance: 5
+    },
+    Skeleton: {
+        speed: 8,
+        ai: 'prophet',
+        blind: false,
+        name: "Skeleton",
+        fps: 30,
+        tolerance: 0
     }
 };
 var MAP = {
@@ -33,8 +41,9 @@ var MAP = {
         wall: "BrickWall4",
         energy: 1500,
         enemy_delay: 3000,
-        //monsters: [MONSTER.Ghosty, MONSTER.ZombieGirl],
-        monsters: [MONSTER.Death2],
+        //monsters: [MONSTER.Ghosty, MONSTER.ZombieGirl, MONSTER.Death2],
+        monsters: [MONSTER.Skeleton],
+        //monsters: [MONSTER.Death2],
     },
 };
 

@@ -56,7 +56,8 @@ var AI = {
     return [goto];
   },
   crossroader(enemy, playerPosition, dir, block) {
-    let goal = enemy.parent.map.GA.findNextCrossroad(playerPosition, dir);
+    let goal, _;
+    [goal, _] = enemy.parent.map.GA.findNextCrossroad(playerPosition, dir);
     if (goal === null) {
       return this.hunt(enemy);
     }
@@ -215,9 +216,37 @@ var AI = {
       return null;
     }
   },
+  prophet(enemy, ARG) {
+    let firstCR, lastDir;
+    [firstCR, lastDir] = enemy.parent.map.GA.findNextCrossroad(ARG.playerPosition, ARG.currentPlayerDir);
+    let directions = enemy.parent.map.GA.getDirectionsIfNot(firstCR, MAPDICT.WALL, lastDir.mirror());
+    let crossroads = [];
+    let secondCR, _;
+    for (let dir of directions) {
+      [secondCR, _] = enemy.parent.map.GA.findNextCrossroad(firstCR.add(dir), dir);
+      crossroads.push(secondCR);
+    }
+    let distances = [];
+    let paths = [];
+    for (let cross of crossroads) {
+      let Astar = enemy.parent.map.GA.findPath_AStar_fast(Grid.toClass(enemy.moveState.pos), cross, [MAPDICT.WALL], "exclude", ARG.block);
 
-  //to do
-  prophet(enemy, ARG) { },
+      if (Astar === null) {
+        return this.immobile(enemy);
+      }
+      if (Astar === 0) {
+        return this.hunt(enemy);
+      }
+
+      distances.push(Astar[cross.x][cross.y].path);
+      paths.push(Astar);
+    }
+
+    let minIndex = distances.indexOf(Math.min(...distances));
+    let path = GRID.pathFromNodeMap(crossroads[minIndex], paths[minIndex]);
+    let finalDirections = GRID.directionsFromPath(path, 1);
+    return finalDirections;
+  },
 
 };
 class Behaviour {

@@ -1106,16 +1106,18 @@ class GridArray {
   }
   findNextCrossroad(start, dir) {
     let directions = this.getDirectionsIfNot(start, MAPDICT.WALL, dir.mirror());
+    let lastDir = dir;
     while (directions.length <= 1) {
       if (directions.length === 0) return null; //dead end!
       start = start.add(directions[0]);
+      lastDir =  directions[0];
       directions = this.getDirectionsIfNot(
         start,
         MAPDICT.WALL,
         directions[0].mirror()
       );
     }
-    return start;
+    return [start, lastDir];
   }
   positionIsNotWall(pos) {
     let grid = Grid.toClass(pos);
