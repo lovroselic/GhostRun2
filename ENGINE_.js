@@ -2130,6 +2130,7 @@ class ACTOR {
     this.currentSpriteTime = 0;
     this.resetIndexes();
     if (this.class !== null) this.refresh();
+    this.animationThrough = false;
   }
   simplify(name) {
     this.class = name;
@@ -2197,17 +2198,19 @@ class ACTOR {
     }
     return orientation;
   }
-  updateAnimation(time, orientation) {
+  updateAnimation(time, orientation = this.orientation) {
     this.currentSpriteTime += time;
     if (this.currentSpriteTime >= this.nextSpriteTime) {
       this.currentSpriteTime -= this.nextSpriteTime;
       this.animateMove(orientation);
     }
   }
-  animateMove(orientation) {
+  animateMove(orientation = this.orientation) {
     this[orientation + "_index"]++;
-    if (this[orientation + "_index"] >= this.asset[orientation].length)
+    if (this[orientation + "_index"] >= this.asset[orientation].length){
       this[orientation + "_index"] = 0;
+      this.animationThrough = true;
+    }
     this.refresh();
   }
   static gridToClass(grid, sprite_class) {

@@ -186,13 +186,14 @@ var DESTRUCTION_ANIMATION = {
     POOL: null,
     map: null,
     IA: "destranimIA",
+    init: IAM.init,
     draw: IAM.draw,
     linkMap: IAM.linkMap,
     add: IAM.add,
     remove: IAM.remove,
     poolToIA: IAM.poolToIA,
     reIndex: IAM.reIndex,
-    manage(lapsedTime, map) {
+    manage(lapsedTime, map = this.map) {
         map[this.IA] = new IndexArray(map.width, map.height, 4, 4);
         this.reIndex();
         this.poolToIA(map[this.IA]);

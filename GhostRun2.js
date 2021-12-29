@@ -21,6 +21,8 @@ var DEBUG = {
     BUTTONS: true,
     VERBOSE: true,
     PAINT_TRAIL: true,
+    invincible: false,
+    INF_LIVES: false,
     finishLevel() {
         GRID_SOLO_FLOOR_OBJECT.POOL.length = 1;
         GRID_SOLO_FLOOR_OBJECT.manage();
@@ -36,7 +38,7 @@ var INI = {
     SPLASH_TIME: 3000,
 };
 var PRG = {
-    VERSION: "0.06.01",
+    VERSION: "0.07.00",
     NAME: "GhostRun II",
     YEAR: "2021",
     CSS: "color: #239AFF;",
@@ -236,8 +238,69 @@ var HERO = {
             let splash = new Splash(grid, new ACTOR('Splash'));
             VANISHING.add(splash);
         }
-    }
+    },
+    collideMonster() {
+        if (HERO.dead) return;
+        let M = MAP[GAME.level].DUNGEON[ENEMY_TG.IA].unroll(HERO.moveState.homeGrid);
+        let hit = M.sum();
+        if (hit > 0) {
+            if (!DEBUG.invincible) HERO.die();
+            for (let m of M){
+                ENEMY_TG.remove(m); 
+            }
+        }
+    },
+    die() {
+        if (HERO.dead) return;
+        AUDIO.Explosion.play();
+        AUDIO.EvilLaughter.play();
+        console.log("HERO died");
+        HERO.dead = true;
+
+        DESTRUCTION_ANIMATION.add(new Explosion(HERO.moveState.homeGrid));
+        console.log("DESTRUCTION_ANIMATION", DESTRUCTION_ANIMATION.POOL);
+
+        ENGINE.GAME.ANIMATION.next(GAME.deadRun);
+
+
+
+        /*
+        GAME.lives--;
+        if (GAME.lives < 0 && !DEBUG.INF_LIVES) {
+            console.log("GAME OVER");
+            //TITLE.gameOver();
+            //GAME.end();
+        } else {
+            console.log("continue level", GAME.level);
+            //setTimeout(ENGINE.GAME.ANIMATION.stop, 1000);
+            //setTimeout(GAME.levelContinue, INI.REPLAY_TIMEOUT);
+        }*/
+    },
+    /*paintDeath() {
+        //ENGINE.clearLayerStack();
+        ENGINE.clearLayer("actors");
+        
+        GAME.ENEMY.draw();
+        ENGINE.spriteDraw("actors", HERO.actor.vx, HERO.actor.vy, SPRITE.skull);
+    }*/
 };
+class Explosion {
+    constructor(grid) {
+        this.grid = grid;
+        this.layer = 'explosion';
+        this.moveState = new MoveState(grid, NOWAY);
+        this.actor = new ACTOR("Explosion", 0, 0, "linear", ASSET.Explosion);
+        GRID.gridToSprite(this.grid, this.actor);
+        this.alignToViewport();
+    }
+    alignToViewport() {
+        ENGINE.VIEWPORT.alignTo(this.actor);
+    }
+    draw(){
+        this.alignToViewport();
+        ENGINE.spriteDraw(this.layer, this.actor.vx, this.actor.vy, this.actor.sprite());
+    }
+}
 class Gold {
     constructor(grid) {
         this.grid = grid;
@@ -325,6 +388,7 @@ class Monster {
         this.viewDir = this.moveState.dir;
     }
     manage(lapsedTime, IA) {
+        if (!GAME.ENEMY.started) return;
         let GA = this.moveState.gridArray;
         if (this.captured) {
             this.viewDir = this.viewDir.ccw();
@@ -414,6 +478,7 @@ var GAME = {
         GRID_SOLO_FLOOR_OBJECT.init(MAP[level].DUNGEON);
         VANISHING.init(MAP[level].DUNGEON);
         ENEMY_TG.init(MAP[level].DUNGEON);
+        DESTRUCTION_ANIMATION.init(MAP[level].DUNGEON);
         SPAWN.gold(level);
         SPAWN.monsters(level);
         MAP[level].pw = MAP[level].width * ENGINE.INI.GRIDPIX;
@@ -438,7 +503,7 @@ var GAME = {
         ENGINE.GAME.ANIMATION.stop();
         ENGINE.TEXT.centeredText("LEVEL COMPLETED", ENGINE.gameWIDTH, ENGINE.gameHEIGHT / 4);
     },
-    countIn: function () {
+    countIn() {
         if (ENGINE.GAME.stopAnimation) return;
         if (!GAME.CI.start) GAME.CI.start = performance.now();
         var delta = Math.floor((performance.now() - GAME.CI.start) / 1000);
@@ -451,15 +516,14 @@ var GAME = {
             GAME.CI.now = delta;
         }
     },
-    afterCountIn: function () {
+    afterCountIn() {
         if (ENGINE.GAME.stopAnimation) return;
         ENGINE.clearLayer("text");
         setTimeout(() => (GAME.ENEMY.started = true), MAP[GAME.level].enemy_delay);
         //ENGINE.GAME.ANIMATION.next(GAME.run);
         GAME.resume();
     },
-    run: function (lapsedTime) {
-        //console.log(lapsedTime);
+    run(lapsedTime) {
         if (ENGINE.GAME.stopAnimation) return;
         GAME.respond();
         HERO.move(lapsedTime);
@@ -468,11 +532,11 @@ var GAME = {
         VANISHING.manage(lapsedTime);
         GAME.ENEMY.move(lapsedTime);
         GAME.ENEMY.collideSplash();
-        //HERO.collideMonster();
+        HERO.collideMonster();
         //
         GAME.frameDraw(lapsedTime);
     },
-    updateVieport: function () {
+    updateVieport() {
         if (!ENGINE.VIEWPORT.changed) return;
         // do required repaints
         ENGINE.VIEWPORT.change("floor", "background");
@@ -480,14 +544,23 @@ var GAME = {
         //
         ENGINE.VIEWPORT.changed = false;
     },
-    frameDraw: function (lapsedTime) {
+    deadRun(lapsedTime) {
+        DESTRUCTION_ANIMATION.manage(lapsedTime);
+        GAME.deadFrameDraw(lapsedTime);
+    },
+    deadFrameDraw(lapsedTime) {
+        ENGINE.clearLayerStack();
+        GAME.ENEMY.draw();
+        ENGINE.spriteDraw("actors", HERO.actor.vx, HERO.actor.vy, SPRITE.skull);
+        GAME.EXP.draw(lapsedTime);
+    },
+    frameDraw(lapsedTime) {
         ENGINE.clearLayerStack();
         GAME.updateVieport();
         //EXPLOSIONS.draw();
         HERO.draw();
         GAME.ENEMY.draw();
         TITLE.radar();
-        //SPLASH.draw();
         GAME.PAINT.splash();
 
         if (DEBUG.FPS) {
@@ -675,7 +748,6 @@ var GAME = {
     ENEMY: {
         started: false,
         move(lapsedTime) {
-            if (!GAME.ENEMY.started) return;
             ENEMY_TG.manage(lapsedTime, HERO);
         },
         draw() {
@@ -691,13 +763,20 @@ var GAME = {
                     enemy.released = true;
                 }
                 let hit = enemy.parent.map[VANISHING.IA].unroll(enemy.moveState.homeGrid).sum();
-                if (hit > 0){
+                if (hit > 0) {
                     enemy.captured = true;
                     if (!enemy.viewDir) enemy.setViewDir();
                 }
             }
         }
+    },
+    EXP:{
+        draw(lapsedTime){
+            ENGINE.clearLayer("explosion");
+            DESTRUCTION_ANIMATION.draw(lapsedTime);
+        }
     }
+
 };
 var TITLE = {
     firstFrame() {
@@ -1013,6 +1092,7 @@ var TITLE = {
         CTX.fillStyle = "red";
         let pool = ENEMY_TG.POOL;
         for (let q = 0; q < pool.length; q++) {
+            if (pool[q] === null) continue;
             CTX.pixelAt(
                 orx + pool[q].moveState.homeGrid.x * INI.MINI_PIX,
                 ory + pool[q].moveState.homeGrid.y * INI.MINI_PIX,

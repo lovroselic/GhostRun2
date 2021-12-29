@@ -17,9 +17,7 @@ var LoadSprites = [
     { srcName: "green.png", name: "Splash" },
     { srcName: "goldBar.png", name: "GoldBarBig" }
 ];
-var LoadSequences = [
-    { srcName: "SHIP_exp", name: "ShipExp", type: "png", count: 8 }
-];
+var LoadSequences = [];
 var LoadSheets = [
     { srcName: "ghost1", type: "png", count: 4, name: "Ghosty" },
     { srcName: "gandalf", type: "png", count: 4, name: "Wizard" },
@@ -46,7 +44,9 @@ var LoadAudio = [
     { srcName: "Determination - LaughingSkull.mp3", name: "Title" }
 ];
 var ExtendSheetTag = [];
-var LoadSheetSequences = [];
+var LoadSheetSequences = [
+    { srcName: "Explosion2.png", name: "Explosion", type: "png", count: 23 }
+];
 var LoadFonts = [
     { srcName: "ArcadeClassic.ttf", name: "Arcade" },
     { srcName: "emulogic.ttf", name: "Emulogic" },
