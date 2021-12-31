@@ -38,7 +38,7 @@ var INI = {
     SPLASH_TIME: 3000,
 };
 var PRG = {
-    VERSION: "0.07.01",
+    VERSION: "0.08.00",
     NAME: "GhostRun II",
     YEAR: "2021",
     CSS: "color: #239AFF;",
@@ -421,7 +421,8 @@ var GAME = {
         GAME.won = false;
         GAME.level = 1;
         GAME.score = 0;
-        GAME.lives = 4;
+        //GAME.lives = 4;
+        GAME.lives = 1;
         HERO.startInit();
         AI.initialize(HERO);
         GAME.fps = new FPS_measurement();
@@ -702,12 +703,25 @@ var GAME = {
         GAME.lives--;
         if (GAME.lives < 0 && !DEBUG.INF_LIVES) {
             console.log("GAME OVER");
-            //TITLE.gameOver();
-            //GAME.end();
+            TITLE.gameOver();
+            GAME.end();
         } else {
             console.log("continue level", GAME.level);
             GAME.continueLevel(GAME.level);
         }
+    },
+    end() {
+        console.log("GAME ENDED");
+        ENGINE.showMouse();
+        AUDIO.Death.onended = GAME.checkScore;
+        AUDIO.Death.play();
+        //GAME.checkScore();
+    },
+    checkScore() {
+        console.log("checking score");
+        SCORE.checkScore(GAME.score);
+        SCORE.hiScore();
+        TITLE.startTitle();
     },
     PAINT: {
         gold() {
@@ -788,7 +802,7 @@ var TITLE = {
         ENGINE.GAME.ANIMATION.next(GAME.runTitle);
     },
     clearAllLayers() {
-        ENGINE.layersToClear = new Set(["text", "animation", "actors", "explosion", "sideback", "button"]);
+        ENGINE.layersToClear = new Set(["text", "animation", "actors", "explosion", "sideback", "button", "score", "energy", "lives", "stage", "radar"]);
         ENGINE.clearLayerStack();
     },
     blackBackgrounds() {
@@ -797,14 +811,14 @@ var TITLE = {
         this.sideBackground();
         ENGINE.fillLayer("background", "#000");
     },
-    topBackground: function () {
+    topBackground() {
         var CTX = LAYER.title;
         CTX.fillStyle = "#000";
         CTX.roundRect(0, 0, ENGINE.titleWIDTH, ENGINE.titleHEIGHT,
             { upperLeft: 20, upperRight: 20, lowerLeft: 0, lowerRight: 0 },
             true, true);
     },
-    bottomBackground: function () {
+    bottomBackground() {
         var CTX = LAYER.bottom;
         CTX.fillStyle = "#000";
         CTX.roundRect(0, 0, ENGINE.bottomWIDTH, ENGINE.bottomHEIGHT,
@@ -882,7 +896,7 @@ var TITLE = {
     music() {
         AUDIO.Title.play();
     },
-    hiScore: function () {
+    hiScore() {
         var CTX = LAYER.title;
         var fs = 16;
         CTX.font = fs + "px Garamond";
@@ -938,7 +952,7 @@ var TITLE = {
             TITLE.lives();
         }
     },
-    energy: function () {
+    energy() {
         ENGINE.clearLayer("energy");
         var CTX = LAYER.energy;
         var fs = 16;
@@ -974,7 +988,7 @@ var TITLE = {
         }
         CTX.fillRect(pad + 1, y + 1, Math.round(energyWidth * percent) - 2, 30);
     },
-    lives: function () {
+    lives() {
         ENGINE.clearLayer("lives");
         var CTX = LAYER.lives;
         var fs = 16;
@@ -998,7 +1012,7 @@ var TITLE = {
             ENGINE.spriteDraw("lives", spread[q], y, SPRITE.Wizard_front_0);
         }
     },
-    stage: function () {
+    stage() {
         ENGINE.clearLayer("stage");
         var CTX = LAYER.stage;
         var fs = 16;
@@ -1020,7 +1034,7 @@ var TITLE = {
         y += fs + 4;
         CTX.fillText(GAME.level.toString().padStart(2, "0"), x, y);
     },
-    radar: function () {
+    radar() {
         ENGINE.clearLayer("radar");
         var CTX = LAYER.radar;
         var fs = 16;
@@ -1081,6 +1095,36 @@ var TITLE = {
             );
         }
     },
+    gameOver() {
+        ENGINE.clearLayer("text");
+        var CTX = LAYER.text;
+        CTX.textAlign = "center";
+        var x = ENGINE.gameWIDTH / 2;
+        var y = ENGINE.gameHEIGHT / 2;
+        var fs = 64;
+        CTX.font = fs + "px Arcade";
+        var txt = CTX.measureText("GAME OVER");
+        var gx = x - txt.width / 2;
+        var gy = y - fs;
+        var grad = CTX.createLinearGradient(gx, gy + 10, gx, gy + fs);
+        grad.addColorStop("0", "#DDD");
+        grad.addColorStop("0.1", "#EEE");
+        grad.addColorStop("0.2", "#DDD");
+        grad.addColorStop("0.3", "#CCC");
+        grad.addColorStop("0.4", "#BBB");
+        grad.addColorStop("0.5", "#AAA");
+        grad.addColorStop("0.6", "#BBB");
+        grad.addColorStop("0.7", "#CCC");
+        grad.addColorStop("0.8", "#DDD");
+        grad.addColorStop("0.9", "#EEE");
+        grad.addColorStop("1", "#DDD");
+        CTX.fillStyle = grad;
+        CTX.shadowColor = "#FFF";
+        CTX.shadowOffsetX = 2;
+        CTX.shadowOffsetY = 2;
+        CTX.shadowBlur = 3;
+        CTX.fillText("GAME OVER", x, y);
+    }
 };
 // -- main --
 $(function () {
