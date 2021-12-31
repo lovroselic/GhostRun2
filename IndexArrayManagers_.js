@@ -48,9 +48,7 @@ var IAM = {
         return this.map[this.IA].empty(grid);
     },
     clearAll() {
-        for (let E of this.POOL) {
-            if (E) this.remove(E.id);
-        }
+        this.POOL = [];
     },
     show(id) {
         return this.POOL[id - 1];

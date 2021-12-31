@@ -57,11 +57,11 @@ var SPAWN = {
         GRID_SOLO_FLOOR_OBJECT.manage(MAP[level].DUNGEON);
     },
     monsters(level) {
+        ENEMY_TG.clearAll();
         for (let [index, monster] of MAP[level].monsters.entries()) {
             ENEMY_TG.add(new Monster(MAP[level].DUNGEON.corridor_starts[index], monster));
 
         }
-        console.log("spawning monsters", ENEMY_TG.POOL);
     }
 
 };

@@ -38,7 +38,7 @@ var INI = {
     SPLASH_TIME: 3000,
 };
 var PRG = {
-    VERSION: "0.07.00",
+    VERSION: "0.07.01",
     NAME: "GhostRun II",
     YEAR: "2021",
     CSS: "color: #239AFF;",
@@ -139,14 +139,7 @@ var HERO = {
     startInit() {
         HERO.spriteClass = "Wizard";
         HERO.asset = ASSET[HERO.spriteClass];
-        HERO.actor = new ACTOR(
-            HERO.spriteClass,
-            HERO.x,
-            HERO.y,
-            "front",
-            HERO.asset,
-            30
-        );
+        HERO.actor = new ACTOR(HERO.spriteClass, HERO.x, HERO.y, "front", HERO.asset, 30);
         HERO.dead = false;
     },
     init() {
@@ -156,11 +149,8 @@ var HERO = {
         GRID.gridToSprite(MAP[GAME.level].DUNGEON.startPosition, HERO.actor);
         HERO.moveState = new MoveState(MAP[GAME.level].DUNGEON.startPosition, null, MAP[GAME.level].DUNGEON.GA);
         HERO.moveState.next(UP);
-        ENGINE.VIEWPORT.check(HERO.actor);
-        ENGINE.VIEWPORT.alignTo(HERO.actor);
         HERO.actor.orientation = "front";
         HERO.actor.refresh();
-        console.log("HERO", HERO);
     },
     draw() {
         if (HERO.dead) return;
@@ -245,44 +235,21 @@ var HERO = {
         let hit = M.sum();
         if (hit > 0) {
             if (!DEBUG.invincible) HERO.die();
-            for (let m of M){
-                ENEMY_TG.remove(m); 
+            for (let m of M) {
+                ENEMY_TG.remove(m);
             }
         }
     },
     die() {
         if (HERO.dead) return;
         AUDIO.Explosion.play();
+        AUDIO.EvilLaughter.onended = GAME.endLaugh;
         AUDIO.EvilLaughter.play();
         console.log("HERO died");
         HERO.dead = true;
-
         DESTRUCTION_ANIMATION.add(new Explosion(HERO.moveState.homeGrid));
-        console.log("DESTRUCTION_ANIMATION", DESTRUCTION_ANIMATION.POOL);
-
         ENGINE.GAME.ANIMATION.next(GAME.deadRun);
-
-
-
-        /*
-        GAME.lives--;
-        if (GAME.lives < 0 && !DEBUG.INF_LIVES) {
-            console.log("GAME OVER");
-            //TITLE.gameOver();
-            //GAME.end();
-        } else {
-            console.log("continue level", GAME.level);
-            //setTimeout(ENGINE.GAME.ANIMATION.stop, 1000);
-            //setTimeout(GAME.levelContinue, INI.REPLAY_TIMEOUT);
-        }*/
     },
-    /*paintDeath() {
-        //ENGINE.clearLayerStack();
-        ENGINE.clearLayer("actors");
-        
-        GAME.ENEMY.draw();
-        ENGINE.spriteDraw("actors", HERO.actor.vx, HERO.actor.vy, SPRITE.skull);
-    }*/
 };
 class Explosion {
     constructor(grid) {
@@ -296,7 +263,7 @@ class Explosion {
     alignToViewport() {
         ENGINE.VIEWPORT.alignTo(this.actor);
     }
-    draw(){
+    draw() {
         this.alignToViewport();
         ENGINE.spriteDraw(this.layer, this.actor.vx, this.actor.vy, this.actor.sprite());
     }
@@ -447,7 +414,6 @@ var GAME = {
 
         let GameRD = new RenderData("Arcade", 60, "#DDD", "text", "#FFF", 2, 2, 2);
         ENGINE.TEXT.setRD(GameRD);
-
         ENGINE.watchVisibility(GAME.lostFocus);
         ENGINE.GAME.start(16); //INIT game loop
         GAME.prepareForRestart();
@@ -456,7 +422,6 @@ var GAME = {
         GAME.level = 1;
         GAME.score = 0;
         GAME.lives = 4;
-
         HERO.startInit();
         AI.initialize(HERO);
         GAME.fps = new FPS_measurement();
@@ -467,8 +432,7 @@ var GAME = {
         console.log("level", GAME.level, "started");
         HERO.energy = MAP[GAME.level].energy;
         GAME.initLevel(GAME.level);
-        GAME.levelExecute();
-
+        GAME.continueLevel(GAME.level);
     },
     initLevel(level) {
         console.log("level", level, "initialized");
@@ -477,20 +441,26 @@ var GAME = {
         console.log("creating random dungeon", MAP[level].DUNGEON);
         GRID_SOLO_FLOOR_OBJECT.init(MAP[level].DUNGEON);
         VANISHING.init(MAP[level].DUNGEON);
-        ENEMY_TG.init(MAP[level].DUNGEON);
         DESTRUCTION_ANIMATION.init(MAP[level].DUNGEON);
         SPAWN.gold(level);
-        SPAWN.monsters(level);
         MAP[level].pw = MAP[level].width * ENGINE.INI.GRIDPIX;
         MAP[level].ph = MAP[level].height * ENGINE.INI.GRIDPIX;
         ENGINE.VIEWPORT.setMax({ x: MAP[level].pw, y: MAP[level].ph });
-
+    },
+    continueLevel(level) {
+        console.log("level", level, "continues");
+        ENEMY_TG.init(MAP[level].DUNGEON);
+        SPAWN.monsters(level);
+        HERO.init();
+        HERO.energy = Math.max(Math.round(GRID_SOLO_FLOOR_OBJECT.size / INI.GOLD * MAP[GAME.level].energy), HERO.energy);
+        GAME.levelExecute();
     },
     levelExecute() {
         console.log("level", GAME.level, "executes");
         GAME.CI.reset();
         ENGINE.VIEWPORT.reset();
-        HERO.init();
+        ENGINE.VIEWPORT.check(HERO.actor);
+        ENGINE.VIEWPORT.alignTo(HERO.actor);
         GAME.drawFirstFrame(GAME.level);
         GAME.ENEMY.started = false;
         ENGINE.GAME.ANIMATION.next(GAME.countIn);
@@ -584,9 +554,6 @@ var GAME = {
 
     },
     blockGrid(level) {
-        console.log("block grid painted");
-        //ENGINE.BLOCKGRID.configure("blockgrid", "#FFF", "#000");
-        //ENGINE.BLOCKGRID.draw(MAP[level].DUNGEON);
         GRID.grid();
         GRID.paintCoord("coord", MAP[level].DUNGEON);
     },
@@ -622,13 +589,13 @@ var GAME = {
         MAZE.bias = 2;
         MAZE.useBias = true;
     },
-    setTitle: function () {
+    setTitle() {
         const text = GAME.generateTitleText();
         const RD = new RenderData("Adore", 16, "#0E0", "bottomText");
         const SQ = new Square(0, 0, LAYER.bottomText.canvas.width, LAYER.bottomText.canvas.height);
         GAME.movingText = new MovingText(text, 4, RD, SQ);
     },
-    generateTitleText: function () {
+    generateTitleText() {
         let text = `${PRG.NAME} ${PRG.VERSION
             }, a game by Lovro Selic, ${"\u00A9"} C00lSch00l ${PRG.YEAR
             }. Title screen graphics by Trina Selic. Music: 'Determination' written and performed by LaughingSkull, ${"\u00A9"} 2007 Lovro Selic. `;
@@ -637,12 +604,12 @@ var GAME = {
         text = text.split("").join(String.fromCharCode(8202));
         return text;
     },
-    runTitle: function () {
+    runTitle() {
         if (ENGINE.GAME.stopAnimation) return;
         GAME.movingText.process();
         GAME.titleFrameDraw();
     },
-    titleFrameDraw: function () {
+    titleFrameDraw() {
         GAME.movingText.draw();
     },
     lostFocus() {
@@ -676,7 +643,7 @@ var GAME = {
         ENGINE.GAME.ANIMATION.next(GAME.run);
         GAME.paused = false;
     },
-    respond: function () {
+    respond() {
         if (HERO.dead) return;
         var map = ENGINE.GAME.keymap;
 
@@ -728,6 +695,20 @@ var GAME = {
         GAME.fps.update(fps);
         CTX.fillText(GAME.fps.getFps(), 5, 10);
     },
+    endLaugh() {
+        console.log("laughter ended");
+        ENGINE.GAME.ANIMATION.stop();
+
+        GAME.lives--;
+        if (GAME.lives < 0 && !DEBUG.INF_LIVES) {
+            console.log("GAME OVER");
+            //TITLE.gameOver();
+            //GAME.end();
+        } else {
+            console.log("continue level", GAME.level);
+            GAME.continueLevel(GAME.level);
+        }
+    },
     PAINT: {
         gold() {
             ENGINE.clearLayer("gold");
@@ -770,8 +751,8 @@ var GAME = {
             }
         }
     },
-    EXP:{
-        draw(lapsedTime){
+    EXP: {
+        draw(lapsedTime) {
             ENGINE.clearLayer("explosion");
             DESTRUCTION_ANIMATION.draw(lapsedTime);
         }
