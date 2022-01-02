@@ -67,6 +67,7 @@ var ENEMY_TG = {
     init: IAM.init,
     clearAll: IAM.clearAll,
     show: IAM.show,
+    get: IAM.show,
     reIndex: IAM.reIndex,
     poolToIA(IA) {
         for (const obj of this.POOL) {

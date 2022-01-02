@@ -39,7 +39,7 @@ var INI = {
     LEVEL_FACTOR: 0.4,
 };
 var PRG = {
-    VERSION: "0.08.02",
+    VERSION: "0.08.03",
     NAME: "GhostRun II",
     YEAR: "2021",
     CSS: "color: #239AFF;",
@@ -369,7 +369,9 @@ class Monster {
             this.actor.animateMove(this.actor.orientation);
         } else {
             if (this.moveState.moving) {
-                if (this.id >= Math.max(...IA.unroll(this.moveState.homeGrid))) {
+                //let others = IA.unroll(this.moveState.homeGrid).filter(el => el !== this.id);
+                let others = IA.unroll(this.moveState.endGrid).filter(el => el !== this.id);
+                if (this.id >= Math.max(...others)) {
                     GRID.translateMove(this, lapsedTime, GA);
                 }
             } else {
@@ -626,11 +628,12 @@ var GAME = {
         GAME.clickPause();
     },
     clickPause() {
-        if (HERO.dead) return;
+        if (HERO.dead || GAME.levelCompleted) return;
         $("#pause").trigger("click");
         ENGINE.GAME.keymap[ENGINE.KEY.map.F4] = false;
     },
     pause() {
+        if (GAME.paused) return;
         if (HERO.dead || GAME.levelCompleted) return;
         console.log("%cGAME paused.", PRG.CSS);
         $("#pause").prop("value", "Resume Game [F4]");
@@ -768,7 +771,6 @@ var GAME = {
             DESTRUCTION_ANIMATION.draw(lapsedTime);
         }
     }
-
 };
 var TITLE = {
     firstFrame() {
