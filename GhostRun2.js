@@ -11,7 +11,6 @@ TODO:
 
 known bugs: 
 
-
  */
 ////////////////////////////////////////////////////
 
@@ -20,7 +19,7 @@ var DEBUG = {
     SETTING: true,
     BUTTONS: true,
     VERBOSE: true,
-    PAINT_TRAIL: true,
+    PAINT_TRAIL: false,
     invincible: false,
     INF_LIVES: false,
     finishLevel() {
@@ -36,9 +35,11 @@ var INI = {
     SCORE_GOLD: 10,
     SPLASH_COST: 10,
     SPLASH_TIME: 3000,
+    LEVEL_BONUS: 1000,
+    LEVEL_FACTOR: 0.4,
 };
 var PRG = {
-    VERSION: "0.08.00",
+    VERSION: "0.08.02",
     NAME: "GhostRun II",
     YEAR: "2021",
     CSS: "color: #239AFF;",
@@ -118,7 +119,8 @@ var PRG = {
         ENGINE.addBOX("DOWN", ENGINE.bottomWIDTH, ENGINE.bottomHEIGHT, ["bottom", "bottomText"], null);
 
         ENGINE.addBOX("LEVEL", ENGINE.gameWIDTH, ENGINE.gameHEIGHT, ["floor", "wall", "gold", "grid", "coord", "player", "debug",], null);
-        //$("#LEVEL").addClass("hidden");
+
+        if (!DEBUG.PAINT_TRAIL) $("#LEVEL").addClass("hidden");
     },
     start() {
         console.log(PRG.NAME + " started.");
@@ -419,10 +421,11 @@ var GAME = {
         GAME.prepareForRestart();
         GAME.completed = false;
         GAME.won = false;
-        GAME.level = 1;
+        //GAME.level = 1;
+        GAME.level = 4;
         GAME.score = 0;
-        //GAME.lives = 4;
-        GAME.lives = 1;
+        GAME.lives = 3;
+        //GAME.lives = 1;
         HERO.startInit();
         AI.initialize(HERO);
         GAME.fps = new FPS_measurement();
@@ -441,7 +444,6 @@ var GAME = {
         MAP[level].DUNGEON = randomDungeon;
         console.log("creating random dungeon", MAP[level].DUNGEON);
         GRID_SOLO_FLOOR_OBJECT.init(MAP[level].DUNGEON);
-        VANISHING.init(MAP[level].DUNGEON);
         DESTRUCTION_ANIMATION.init(MAP[level].DUNGEON);
         SPAWN.gold(level);
         MAP[level].pw = MAP[level].width * ENGINE.INI.GRIDPIX;
@@ -451,6 +453,7 @@ var GAME = {
     continueLevel(level) {
         console.log("level", level, "continues");
         ENEMY_TG.init(MAP[level].DUNGEON);
+        VANISHING.init(MAP[level].DUNGEON);
         SPAWN.monsters(level);
         HERO.init();
         HERO.energy = Math.max(Math.round(GRID_SOLO_FLOOR_OBJECT.size / INI.GOLD * MAP[GAME.level].energy), HERO.energy);
@@ -470,9 +473,19 @@ var GAME = {
         console.log("level", GAME.level, "ended.");
         SPEECH.speak("Good job!");
         GAME.levelCompleted = true;
-        //
-        ENGINE.GAME.ANIMATION.stop();
         ENGINE.TEXT.centeredText("LEVEL COMPLETED", ENGINE.gameWIDTH, ENGINE.gameHEIGHT / 4);
+        TITLE.endLevel();
+        ENGINE.GAME.ANIMATION.next(ENGINE.KEY.waitFor.bind(null, GAME.nextLevel, "enter"));
+
+        //debug
+        //ENGINE.GAME.ANIMATION.stop();
+    },
+    nextLevel() {
+        console.log("next level ....");
+        GAME.level++;
+        GAME.levelCompleted = false;
+        //create generic levels ...
+        ENGINE.GAME.ANIMATION.waitThen(GAME.levelStart, 2);
     },
     countIn() {
         if (ENGINE.GAME.stopAnimation) return;
@@ -491,7 +504,6 @@ var GAME = {
         if (ENGINE.GAME.stopAnimation) return;
         ENGINE.clearLayer("text");
         setTimeout(() => (GAME.ENEMY.started = true), MAP[GAME.level].enemy_delay);
-        //ENGINE.GAME.ANIMATION.next(GAME.run);
         GAME.resume();
     },
     run(lapsedTime) {
@@ -504,15 +516,12 @@ var GAME = {
         GAME.ENEMY.move(lapsedTime);
         GAME.ENEMY.collideSplash();
         HERO.collideMonster();
-        //
         GAME.frameDraw(lapsedTime);
     },
     updateVieport() {
         if (!ENGINE.VIEWPORT.changed) return;
-        // do required repaints
         ENGINE.VIEWPORT.change("floor", "background");
         ENGINE.VIEWPORT.change("gold", "background");
-        //
         ENGINE.VIEWPORT.changed = false;
     },
     deadRun(lapsedTime) {
@@ -528,7 +537,6 @@ var GAME = {
     frameDraw(lapsedTime) {
         ENGINE.clearLayerStack();
         GAME.updateVieport();
-        //EXPLOSIONS.draw();
         HERO.draw();
         GAME.ENEMY.draw();
         TITLE.radar();
@@ -551,7 +559,7 @@ var GAME = {
         HERO.draw();
         GAME.ENEMY.draw();
         //debug
-        GAME.blockGrid(level);
+        if (DEBUG.PAINT_TRAIL) GAME.blockGrid(level);
 
     },
     blockGrid(level) {
@@ -623,7 +631,7 @@ var GAME = {
         ENGINE.GAME.keymap[ENGINE.KEY.map.F4] = false;
     },
     pause() {
-        if (HERO.dead) return;
+        if (HERO.dead || GAME.levelCompleted) return;
         console.log("%cGAME paused.", PRG.CSS);
         $("#pause").prop("value", "Resume Game [F4]");
         $("#pause").off("click", GAME.pause);
@@ -656,20 +664,11 @@ var GAME = {
         if (map[ENGINE.KEY.map.F9]) {
             DEBUG.finishLevel();
         }
-        /*if (map[ENGINE.KEY.map.F8]) {
-          console.log("kill ,,,,,");
-          GAME.lives = 0;
-        }*/
-
-
         if (map[ENGINE.KEY.map.ctrl]) {
             HERO.splash();
             AUDIO.Splash.play();
             ENGINE.GAME.keymap[ENGINE.KEY.map.ctrl] = false; //NO repeat
         }
-
-
-        //single key section
         if (map[ENGINE.KEY.map.left]) {
             HERO.tryToChangeDir(LEFT);
             return;
@@ -697,7 +696,6 @@ var GAME = {
         CTX.fillText(GAME.fps.getFps(), 5, 10);
     },
     endLaugh() {
-        console.log("laughter ended");
         ENGINE.GAME.ANIMATION.stop();
 
         GAME.lives--;
@@ -715,7 +713,6 @@ var GAME = {
         ENGINE.showMouse();
         AUDIO.Death.onended = GAME.checkScore;
         AUDIO.Death.play();
-        //GAME.checkScore();
     },
     checkScore() {
         console.log("checking score");
@@ -735,7 +732,7 @@ var GAME = {
     },
     CI: {
         text: ["READY", "SET?", "GO!"],
-        reset: function () {
+        reset() {
             GAME.CI.start = null;
             GAME.CI.now = null;
         }
@@ -1124,7 +1121,38 @@ var TITLE = {
         CTX.shadowOffsetY = 2;
         CTX.shadowBlur = 3;
         CTX.fillText("GAME OVER", x, y);
-    }
+    },
+    endLevel() {
+        let CTX = LAYER.text;
+        CTX.save();
+        let p = ENGINE.window(ENGINE.gameWIDTH / 2, 232);
+        CTX.textAlign = "center";
+        let fs = 16;
+        CTX.font = fs + "px Adore";
+        let y = p.y + fs * 3;
+        let x = ENGINE.gameWIDTH / 2;
+        CTX.fillStyle = "#CCC";
+        CTX.shadowColor = "yellow";
+        CTX.shadowOffsetX = 1;
+        CTX.shadowOffsetY = 1;
+        CTX.shadowBlur = 0;
+        CTX.fillText("Level " + GAME.level.toString().padStart(2, "0") + " complete", x, y);
+        y += fs * 1.3;
+        CTX.fillText("-----------------", x, y);
+        y += fs * 1.3;
+        CTX.fillText("Time bonus: " + HERO.energy.toString().padStart(5, "0"), x, y);
+        y += fs * 1.3;
+        let bonus = INI.LEVEL_BONUS + (GAME.level - 1) * (INI.LEVEL_BONUS * INI.LEVEL_FACTOR);
+        CTX.fillText("Stage bonus: " + bonus.toString().padStart(5, "0"), x, y);
+        GAME.score += HERO.energy;
+        GAME.score += bonus;
+        TITLE.score();
+        y += 3 * fs * 1.3;
+        fs = 14;
+        CTX.font = fs + "px Adore";
+        CTX.fillText("Press ENTER to continue", x, y);
+        CTX.restore();
+    },
 };
 // -- main --
 $(function () {
