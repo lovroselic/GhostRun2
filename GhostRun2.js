@@ -39,7 +39,7 @@ var INI = {
     LEVEL_FACTOR: 0.4,
 };
 var PRG = {
-    VERSION: "0.08.03",
+    VERSION: "0.10.00",
     NAME: "GhostRun II",
     YEAR: "2021",
     CSS: "color: #239AFF;",
@@ -330,6 +330,7 @@ class Monster {
         this.viewDir = null;
         this.captured = false;
         this.released = false;
+        this.waiting = false;
     }
     alignToViewport() {
         ENGINE.VIEWPORT.alignTo(this.actor);
@@ -358,6 +359,7 @@ class Monster {
     }
     manage(lapsedTime, IA) {
         if (!GAME.ENEMY.started) return;
+        this.waiting = false; //
         let GA = this.moveState.gridArray;
         if (this.captured) {
             this.viewDir = this.viewDir.ccw();
@@ -371,8 +373,30 @@ class Monster {
             if (this.moveState.moving) {
                 //let others = IA.unroll(this.moveState.homeGrid).filter(el => el !== this.id);
                 let others = IA.unroll(this.moveState.endGrid).filter(el => el !== this.id);
+
+                let any = others.sum() !== 0;
+                if (any) {
+                    for (let monsterId of others) {
+                        let monster = ENEMY_TG.get(monsterId);
+
+                        if (monster.captured || monster.waiting) {
+                            if (!monster.captured) {
+                                if (this.id < monster.id) {
+                                    return;
+                                }
+                            }
+                        }
+
+                    }
+                }
+
+
+
                 if (this.id >= Math.max(...others)) {
                     GRID.translateMove(this, lapsedTime, GA);
+                    this.waiting = false;
+                } else {
+                    this.waiting = true;
                 }
             } else {
                 this.look();
@@ -424,7 +448,7 @@ var GAME = {
         GAME.completed = false;
         GAME.won = false;
         //GAME.level = 1;
-        GAME.level = 4;
+        GAME.level = 5;
         GAME.score = 0;
         GAME.lives = 3;
         //GAME.lives = 1;

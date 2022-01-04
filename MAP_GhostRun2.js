@@ -93,10 +93,7 @@ var MAP = {
         wall: "DungeonWall",
         energy: 1500,
         enemy_delay: 3000,
-        monsters: [MONSTER.Ghosty, MONSTER.ZombieGirl, MONSTER.Death2],
-        //monsters: [MONSTER.Ghosty, MONSTER.ZombieGirl, MONSTER.Death2, MONSTER.Skeleton],
-        //monsters: [MONSTER.Skeleton],
-        //monsters: [MONSTER.Death2],
+        monsters: [MONSTER.Ghosty, MONSTER.ZombieGirl, MONSTER.Death2, MONSTER.Death, MONSTER.Skeleton],
     },
     6: {
         width: 50,

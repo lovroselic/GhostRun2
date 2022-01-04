@@ -1691,7 +1691,7 @@ var ARENA = {
     }
 };
 var DUNGEON = {
-    VERSION: "3.03.DEV",
+    VERSION: "3.03",
     CSS: "color: #f4ee42",
     REFUSE_CONNECTION_TO_ROOM: true,
     LIMIT_ROOMS: false,
