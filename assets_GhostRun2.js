@@ -29,7 +29,10 @@ var LoadSheets = [
     { srcName: "skeleton10", type: "png", count: 3, name: "Skeleton2" },
     { srcName: "CoinBoss", type: "png", count: 4, name: "Puffy" },
     { srcName: "sanke", type: "png", count: 4, name: "Snake" },
-    { srcName: "skeleton9", type: "png", count: 4, name: "Skeleton3" }
+    { srcName: "skeleton9", type: "png", count: 4, name: "Skeleton3" },
+    { srcName: "devil", type: "png", count: 4, name: "Devil" },
+    { srcName: "behemoth", type: "png", count: 4, name: "Behemoth" },
+    { srcName: "zombie2", type: "png", count: 3, name: "Ghoul" },
 ];
 var LoadRotated = [];
 var LoadPacks = [];

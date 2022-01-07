@@ -8,6 +8,7 @@
 /*
       
 TODO:
+    --expand m/m collision resolution
 
 known bugs: 
 
@@ -15,10 +16,10 @@ known bugs:
 ////////////////////////////////////////////////////
 
 var DEBUG = {
-    FPS: true,
+    FPS: false,
     SETTING: true,
     BUTTONS: true,
-    VERBOSE: true,
+    VERBOSE: false,
     PAINT_TRAIL: false,
     invincible: false,
     INF_LIVES: false,
@@ -39,19 +40,15 @@ var INI = {
     LEVEL_FACTOR: 0.4,
 };
 var PRG = {
-    VERSION: "0.10.00",
+    VERSION: "0.11.00",
     NAME: "GhostRun II",
     YEAR: "2021",
     CSS: "color: #239AFF;",
     INIT() {
         console.log("%c****************************", PRG.CSS);
-        console.log(
-            `${PRG.NAME} ${PRG.VERSION} by Lovro Selic, (c) C00lSch00l ${PRG.YEAR} on ${navigator.userAgent}`
-        );
+        console.log(`${PRG.NAME} ${PRG.VERSION} by Lovro Selic, (c) C00lSch00l ${PRG.YEAR} on ${navigator.userAgent}`);
         $("#title").html(PRG.NAME);
-        $("#version").html(
-            `${PRG.NAME} V${PRG.VERSION} <span style='font-size:14px'>&copy</span> C00lSch00l ${PRG.YEAR}`
-        );
+        $("#version").html(`${PRG.NAME} V${PRG.VERSION} <span style='font-size:14px'>&copy</span> C00lSch00l ${PRG.YEAR}`);
         $("input#toggleAbout").val("About " + PRG.NAME);
         $("#about fieldset legend").append(" " + PRG.NAME + " ");
 
@@ -214,7 +211,7 @@ var HERO = {
             ENGINE.VIEWPORT.changed = true;
             AUDIO.Pick.play();
         }
-        //check if over
+
         if (GRID_SOLO_FLOOR_OBJECT.size === 0) {
             GAME.levelEnd();
         }
@@ -295,12 +292,7 @@ class Splash {
         let CTX = LAYER.splash;
         CTX.save();
         CTX.globalAlpha = this.alpha;
-        ENGINE.spriteDraw(
-            "splash",
-            this.actor.vx,
-            this.actor.vy,
-            SPRITE.Splash
-        );
+        ENGINE.spriteDraw("splash", this.actor.vx, this.actor.vy, SPRITE.Splash);
         CTX.restore();
     }
     update(time) {
@@ -378,7 +370,6 @@ class Monster {
                 if (any) {
                     for (let monsterId of others) {
                         let monster = ENEMY_TG.get(monsterId);
-
                         if (monster.captured || monster.waiting) {
                             if (!monster.captured) {
                                 if (this.id < monster.id) {
@@ -386,11 +377,8 @@ class Monster {
                                 }
                             }
                         }
-
                     }
                 }
-
-
 
                 if (this.id >= Math.max(...others)) {
                     GRID.translateMove(this, lapsedTime, GA);
@@ -443,32 +431,27 @@ var GAME = {
         let GameRD = new RenderData("Arcade", 60, "#DDD", "text", "#FFF", 2, 2, 2);
         ENGINE.TEXT.setRD(GameRD);
         ENGINE.watchVisibility(GAME.lostFocus);
-        ENGINE.GAME.start(16); //INIT game loop
+        ENGINE.GAME.start(16);
         GAME.prepareForRestart();
         GAME.completed = false;
         GAME.won = false;
-        //GAME.level = 1;
-        GAME.level = 5;
+        GAME.level = 1;
         GAME.score = 0;
         GAME.lives = 3;
-        //GAME.lives = 1;
         HERO.startInit();
         AI.initialize(HERO);
         GAME.fps = new FPS_measurement();
         ENGINE.GAME.ANIMATION.waitThen(GAME.levelStart, 2);
-
     },
     levelStart() {
-        console.log("level", GAME.level, "started");
+        MAP.createNewLevel(GAME.level);
         HERO.energy = MAP[GAME.level].energy;
         GAME.initLevel(GAME.level);
         GAME.continueLevel(GAME.level);
     },
     initLevel(level) {
-        console.log("level", level, "initialized");
         let randomDungeon = RAT_ARENA.create(MAP[level].width, MAP[level].height);
         MAP[level].DUNGEON = randomDungeon;
-        console.log("creating random dungeon", MAP[level].DUNGEON);
         GRID_SOLO_FLOOR_OBJECT.init(MAP[level].DUNGEON);
         DESTRUCTION_ANIMATION.init(MAP[level].DUNGEON);
         SPAWN.gold(level);
@@ -477,7 +460,6 @@ var GAME = {
         ENGINE.VIEWPORT.setMax({ x: MAP[level].pw, y: MAP[level].ph });
     },
     continueLevel(level) {
-        console.log("level", level, "continues");
         ENEMY_TG.init(MAP[level].DUNGEON);
         VANISHING.init(MAP[level].DUNGEON);
         SPAWN.monsters(level);
@@ -486,7 +468,6 @@ var GAME = {
         GAME.levelExecute();
     },
     levelExecute() {
-        console.log("level", GAME.level, "executes");
         GAME.CI.reset();
         ENGINE.VIEWPORT.reset();
         ENGINE.VIEWPORT.check(HERO.actor);
@@ -496,21 +477,15 @@ var GAME = {
         ENGINE.GAME.ANIMATION.next(GAME.countIn);
     },
     levelEnd() {
-        console.log("level", GAME.level, "ended.");
         SPEECH.speak("Good job!");
         GAME.levelCompleted = true;
         ENGINE.TEXT.centeredText("LEVEL COMPLETED", ENGINE.gameWIDTH, ENGINE.gameHEIGHT / 4);
         TITLE.endLevel();
         ENGINE.GAME.ANIMATION.next(ENGINE.KEY.waitFor.bind(null, GAME.nextLevel, "enter"));
-
-        //debug
-        //ENGINE.GAME.ANIMATION.stop();
     },
     nextLevel() {
-        console.log("next level ....");
         GAME.level++;
         GAME.levelCompleted = false;
-        //create generic levels ...
         ENGINE.GAME.ANIMATION.waitThen(GAME.levelStart, 2);
     },
     countIn() {
@@ -584,16 +559,14 @@ var GAME = {
         TITLE.firstFrame();
         HERO.draw();
         GAME.ENEMY.draw();
-        //debug
-        if (DEBUG.PAINT_TRAIL) GAME.blockGrid(level);
 
+        if (DEBUG.PAINT_TRAIL) GAME.blockGrid(level);
     },
     blockGrid(level) {
         GRID.grid();
         GRID.paintCoord("coord", MAP[level].DUNGEON);
     },
     prepareForRestart() {
-        console.log("preparing game for start or safe restart ...");
         ENGINE.TIMERS.clear();
     },
     setup() {
@@ -633,9 +606,9 @@ var GAME = {
     generateTitleText() {
         let text = `${PRG.NAME} ${PRG.VERSION
             }, a game by Lovro Selic, ${"\u00A9"} C00lSch00l ${PRG.YEAR
-            }. Title screen graphics by Trina Selic. Music: 'Determination' written and performed by LaughingSkull, ${"\u00A9"} 2007 Lovro Selic. `;
-        text +=
-            "     ENGINE, SPEECH, GRID, MAZE and GAME code by Lovro Selic using JavaScript. ";
+            }. Title screen graphics by Trina Selic. Music: 'Determination' written and performed by LaughingSkull, ${"\u00A9"
+            } 2007 Lovro Selic. `;
+        text += "     ENGINE, SPEECH, GRID, MAZE and GAME code by Lovro Selic using JavaScript. ";
         text = text.split("").join(String.fromCharCode(8202));
         return text;
     },
@@ -694,7 +667,7 @@ var GAME = {
         if (map[ENGINE.KEY.map.ctrl]) {
             HERO.splash();
             AUDIO.Splash.play();
-            ENGINE.GAME.keymap[ENGINE.KEY.map.ctrl] = false; //NO repeat
+            ENGINE.GAME.keymap[ENGINE.KEY.map.ctrl] = false;
         }
         if (map[ENGINE.KEY.map.left]) {
             HERO.tryToChangeDir(LEFT);
@@ -724,25 +697,21 @@ var GAME = {
     },
     endLaugh() {
         ENGINE.GAME.ANIMATION.stop();
-
         GAME.lives--;
         if (GAME.lives < 0 && !DEBUG.INF_LIVES) {
             console.log("GAME OVER");
             TITLE.gameOver();
             GAME.end();
         } else {
-            console.log("continue level", GAME.level);
             GAME.continueLevel(GAME.level);
         }
     },
     end() {
-        console.log("GAME ENDED");
         ENGINE.showMouse();
         AUDIO.Death.onended = GAME.checkScore;
         AUDIO.Death.play();
     },
     checkScore() {
-        console.log("checking score");
         SCORE.checkScore(GAME.score);
         SCORE.hiScore();
         TITLE.startTitle();
@@ -800,6 +769,8 @@ var TITLE = {
     firstFrame() {
         TITLE.clearAllLayers();
         TITLE.sideBackground();
+        TITLE.topBackground();
+        TITLE.titlePlot();
         TITLE.bottom();
         TITLE.hiScore();
         TITLE.score();
@@ -809,7 +780,6 @@ var TITLE = {
         TITLE.radar();
     },
     startTitle() {
-        console.log("Title started ...");
         $("#pause").prop("disabled", true);
         if (AUDIO.Title) AUDIO.Title.play();
         TITLE.clearAllLayers();
@@ -821,11 +791,11 @@ var TITLE = {
         ENGINE.topCanvas = ENGINE.getCanvasName("ROOM");
         TITLE.drawButtons();
         GAME.setTitle();
-        ENGINE.GAME.start(16); //INIT game loop
+        ENGINE.GAME.start(16);
         ENGINE.GAME.ANIMATION.next(GAME.runTitle);
     },
     clearAllLayers() {
-        ENGINE.layersToClear = new Set(["text", "animation", "actors", "explosion", "sideback", "button", "score", "energy", "lives", "stage", "radar"]);
+        ENGINE.layersToClear = new Set(["text", "animation", "actors", "explosion", "sideback", "button", "score", "energy", "lives", "stage", "radar", "title"]);
         ENGINE.clearLayerStack();
     },
     blackBackgrounds() {
@@ -924,28 +894,21 @@ var TITLE = {
         var fs = 16;
         CTX.font = fs + "px Garamond";
         CTX.fillStyle = GAME.grad;
-        CTX.shadowColor = "yellow";
+        CTX.shadowColor = "#cec967";
         CTX.shadowOffsetX = 1;
         CTX.shadowOffsetY = 1;
-        CTX.shadowBlur = 2;
+        CTX.shadowBlur = 1;
         CTX.textAlign = "left";
         var x = 700;
         var y = 32 + fs;
         var index = SCORE.SCORE.name[0].indexOf("&nbsp");
         var HS;
         if (index > 0) {
-            HS = SCORE.SCORE.name[0].substring(
-                0,
-                SCORE.SCORE.name[0].indexOf("&nbsp")
-            );
+            HS = SCORE.SCORE.name[0].substring(0, SCORE.SCORE.name[0].indexOf("&nbsp"));
         } else {
             HS = SCORE.SCORE.name[0];
         }
-        var text =
-            "HISCORE: " +
-            SCORE.SCORE.value[0].toString().padStart(6, "0") +
-            " by " +
-            HS;
+        var text = "HISCORE: " + SCORE.SCORE.value[0].toString().padStart(6, "0") + " by " + HS;
         CTX.fillText(text, x, y);
     },
     score() {
@@ -954,7 +917,7 @@ var TITLE = {
         var fs = 16;
         CTX.font = fs + "px Emulogic";
         CTX.fillStyle = GAME.grad;
-        CTX.shadowColor = "yellow";
+        CTX.shadowColor = "#cec967";
         CTX.shadowOffsetX = 1;
         CTX.shadowOffsetY = 1;
         CTX.shadowBlur = 2;
@@ -1017,7 +980,7 @@ var TITLE = {
         var fs = 16;
         CTX.font = fs + "px Emulogic";
         CTX.fillStyle = GAME.grad;
-        CTX.shadowColor = "yellow";
+        CTX.shadowColor = "#cec967";
         CTX.shadowOffsetX = 1;
         CTX.shadowOffsetY = 1;
         CTX.shadowBlur = 2;
@@ -1041,7 +1004,7 @@ var TITLE = {
         var fs = 16;
         CTX.font = fs + "px Emulogic";
         CTX.fillStyle = GAME.grad;
-        CTX.shadowColor = "yellow";
+        CTX.shadowColor = "#cec967";
         CTX.shadowOffsetX = 1;
         CTX.shadowOffsetY = 1;
         CTX.shadowBlur = 2;
@@ -1063,7 +1026,7 @@ var TITLE = {
         var fs = 16;
         CTX.font = fs + "px Emulogic";
         CTX.fillStyle = GAME.grad;
-        CTX.shadowColor = "yellow";
+        CTX.shadowColor = "#cec967";
         CTX.shadowOffsetX = 1;
         CTX.shadowOffsetY = 1;
         CTX.shadowBlur = 2;
@@ -1086,8 +1049,9 @@ var TITLE = {
         CTX.shadowBlur = 0;
         var orx = pad + 1;
         var ory = y + 1;
+        
         //draw hero
-        CTX.fillStyle = "#00F"; //blue
+        CTX.fillStyle = "#00F"; 
         CTX.pixelAt(
             orx + HERO.moveState.homeGrid.x * INI.MINI_PIX,
             ory + HERO.moveState.homeGrid.y * INI.MINI_PIX,
@@ -1157,11 +1121,11 @@ var TITLE = {
         CTX.font = fs + "px Adore";
         let y = p.y + fs * 3;
         let x = ENGINE.gameWIDTH / 2;
-        CTX.fillStyle = "#CCC";
+        CTX.fillStyle = GAME.grad;
         CTX.shadowColor = "yellow";
         CTX.shadowOffsetX = 1;
         CTX.shadowOffsetY = 1;
-        CTX.shadowBlur = 0;
+        CTX.shadowBlur = 1;
         CTX.fillText("Level " + GAME.level.toString().padStart(2, "0") + " complete", x, y);
         y += fs * 1.3;
         CTX.fillText("-----------------", x, y);
@@ -1180,6 +1144,7 @@ var TITLE = {
         CTX.restore();
     },
 };
+
 // -- main --
 $(function () {
     PRG.INIT();
