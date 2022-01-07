@@ -6,7 +6,7 @@
 
 //////////////////engine.js/////////////////////////
 //                                                //
-//      ENGINE version 3.00        by LS          //
+//      ENGINE version 3.03        by LS          //
 //                                                //
 ////////////////////////////////////////////////////
 
@@ -30,7 +30,7 @@ var DownRight = new Vector(1, 1);
 var DownLeft = new Vector(-1, 1);
 
 var ENGINE = {
-  VERSION: "3.03.DEV",
+  VERSION: "3.03",
   CSS: "color: #0FA",
   INI: {
     ANIMATION_INTERVAL: 16,
@@ -47,10 +47,10 @@ var ENGINE = {
     MOUSE_IDLE: 3000
   },
   verbose: true,
-  setGridSize: function (size = 48) {
+  setGridSize(size = 48) {
     ENGINE.INI.GRIDPIX = size;
   },
-  setSpriteSheetSize: function (size = 48) {
+  setSpriteSheetSize(size = 48) {
     ENGINE.INI.SPRITESHEET_DEFAULT_WIDTH = size;
     ENGINE.INI.SPRITESHEET_DEFAULT_HEIGHT = size;
   },
@@ -1997,6 +1997,7 @@ var PATTERN = {
     PATTERN[which] = CTX.createPattern(image, "repeat");
   }
 };
+///////////////////////////obsolete part/////////////////////////
 var AnimationSPRITE = function (x, y, type, howmany) {
   this.x = x;
   this.y = y;
@@ -2098,6 +2099,7 @@ var EXPLOSIONS = {
     }
   }
 };
+//////////////////////////obsolete part end////////////////////////////////
 class LiveSPRITE {
   constructor(type, left, right, front, back) {
     this.type = type || null;

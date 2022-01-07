@@ -16,9 +16,14 @@
         </div>
         <div id="SC"></div>
         <h1 id="title"></h1>
-        <p>
-            #gametext
-        </p>
+        <p>Ghosty has become rich in his previous adventures in Princess' castle (<a
+                href="/Games/CastleHaunt.php">CastleHunt</a>) and ancient tombs (<a href="/Games/Anxys.php">Anxys</a>).
+            And as he wanted to enjoy the fruits of his greed in peace, the greedy wizard appeared. YOU!</p>
+        <p>Your goal is to steal Ghosty's treasure and avoid his nasty friends. As you are a wizard, you can spit green
+            pools of acid to confuse and delay monsters, but doing so costs energy. Running around in frantic panic also
+            costs energy, so take care. Study your enemy carefully, they are not the same. Some are smarter than others
+            ... but they are bound to their rules.</p>
+        <p>Check instructions to learn more.</p>
 
         <div id="debug">
             <div class="setup_container smallsection" id="selector">
@@ -72,7 +77,9 @@
                 <legend>
                     Instructions:
                 </legend>
-
+                <p>Use cursor keys to navigate wizard. If unguided, the wizard will turn randomly.</p>
+                <p>Use Control key to release green pools of acid.</p>
+                <p>Collect all gold bars to clear the level.</p>
             </fieldset>
         </div>
         <div id="about" class="section">
@@ -90,7 +97,9 @@
                         design a distinct personalities for antagonists.</p>
                     <p>Source of graphics are various free resource sites. No copyrighted images were intendedly used in
                         the making of the game. Code is written in JavaScript using JQuery framework.</p>
-                    <p>Version II ...</p>
+                    <p>Version II is mostly the same as Version I. Main changes are under the hood. It runs much faster
+                        on completely reworked ENGINE and GRID. All mazes generated are now random. The game has no
+                        ending, levels above 10 are similar to difficulty but are no harder than 10.</p>
             </fieldset>
         </div>
 
@@ -107,11 +116,11 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"
         integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
     <script src='./Prototype_3_01.js'></script>
-    <script src='./ENGINE_.js'></script>
-    <script src='./GRID_.js'></script>
-    <script src='./AI_.js'></script>
+    <script src='./ENGINE_3_03.js'></script>
+    <script src='./GRID_3_03.js'></script>
+    <script src='./AI_1_01.js'></script>
     <script src='./MAZE_3_03.js'></script>
-    <script src='./IndexArrayManagers_.js'></script>
+    <script src='./IndexArrayManagers_1_01.js'></script>
     <script src='./assets_GhostRun2.js'></script>-
     <script src='./MAP_GhostRun2.js'></script>
     <script src='./speech_1_00.js'></script>

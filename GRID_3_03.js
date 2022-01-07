@@ -5,7 +5,7 @@
 "use strict";
 
 //////////////////////////////////////
-// GRID v 3.01.DEV   by LS          //
+// GRID v 3.03       by LS          //
 //////////////////////////////////////
 
 /*
@@ -16,7 +16,7 @@ known bugs:
 */
 
 var GRID = {
-  VERSION: "3.03.DEV",
+  VERSION: "3.03",
   CSS: "color: #0AA",
   SETTING: {
     ALLOW_CROSS: false,

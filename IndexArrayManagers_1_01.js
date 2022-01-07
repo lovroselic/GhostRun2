@@ -5,7 +5,7 @@
 "use strict";
 
 var IAM = {
-    version: "1.01.DEV",
+    version: "1.01",
     draw() {
         for (let obj of this.POOL) {
             if (obj) obj.draw();
@@ -85,7 +85,6 @@ var ENEMY_TG = {
             enemy.manage(lapsedTime, map[this.IA]);
         }
     },
-
 };
 var VANISHING = {
     POOL: null,

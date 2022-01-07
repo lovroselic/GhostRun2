@@ -26,7 +26,7 @@ knownBugs:
 /////////////////////////////////////////
 
 var AI = {
-  VERSION: "1.01.DEV",
+  VERSION: "1.01",
   CSS: "color: silver",
   referenceEntity: null,
   immobileWander: true,

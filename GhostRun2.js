@@ -17,8 +17,7 @@ known bugs:
 
 var DEBUG = {
     FPS: false,
-    SETTING: true,
-    BUTTONS: true,
+    SETTING: false,
     VERBOSE: false,
     PAINT_TRAIL: false,
     invincible: false,
@@ -40,7 +39,7 @@ var INI = {
     LEVEL_FACTOR: 0.4,
 };
 var PRG = {
-    VERSION: "0.11.00",
+    VERSION: "0.90.0",
     NAME: "GhostRun II",
     YEAR: "2021",
     CSS: "color: #239AFF;",
@@ -363,8 +362,10 @@ class Monster {
             this.actor.animateMove(this.actor.orientation);
         } else {
             if (this.moveState.moving) {
-                //let others = IA.unroll(this.moveState.homeGrid).filter(el => el !== this.id);
                 let others = IA.unroll(this.moveState.endGrid).filter(el => el !== this.id);
+                others = others.concat(IA.unroll(this.moveState.homeGrid).filter(el => el !== this.id));
+                others = new Set(others);
+                others = [...others];
 
                 let any = others.sum() !== 0;
                 if (any) {
