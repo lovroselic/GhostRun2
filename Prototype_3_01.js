@@ -262,6 +262,11 @@ Array.prototype.midsort = function () {
 
   return sorted;
 };
+Array.prototype.addUnique = function (arr) {
+  let temp = this.concat(arr);
+  temp = new Set(temp);
+  return [...temp];
+};
 
 String.prototype.capitalize = function () {
   return this.charAt(0).toUpperCase() + this.substr(1).toLowerCase();

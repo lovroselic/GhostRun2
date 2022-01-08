@@ -17,6 +17,7 @@ known bugs:
 
 var DEBUG = {
     FPS: false,
+    BUTTONS: false,
     SETTING: false,
     VERBOSE: false,
     PAINT_TRAIL: false,
@@ -39,7 +40,7 @@ var INI = {
     LEVEL_FACTOR: 0.4,
 };
 var PRG = {
-    VERSION: "0.90.0",
+    VERSION: "0.90.1",
     NAME: "GhostRun II",
     YEAR: "2021",
     CSS: "color: #239AFF;",
@@ -362,10 +363,9 @@ class Monster {
             this.actor.animateMove(this.actor.orientation);
         } else {
             if (this.moveState.moving) {
-                let others = IA.unroll(this.moveState.endGrid).filter(el => el !== this.id);
-                others = others.concat(IA.unroll(this.moveState.homeGrid).filter(el => el !== this.id));
-                others = new Set(others);
-                others = [...others];
+                let others = IA.unroll(this.moveState.endGrid);
+                others = others.addUnique(IA.unroll(this.moveState.homeGrid));
+                others = others.filter(el => el !== this.id);
 
                 let any = others.sum() !== 0;
                 if (any) {
@@ -606,10 +606,10 @@ var GAME = {
     },
     generateTitleText() {
         let text = `${PRG.NAME} ${PRG.VERSION
-            }, a game by Lovro Selic, ${"\u00A9"} C00lSch00l ${PRG.YEAR
+            }, a game by Lovro Selic, ${"\u00A9"} C00LSch00L ${PRG.YEAR
             }. Title screen graphics by Trina Selic. Music: 'Determination' written and performed by LaughingSkull, ${"\u00A9"
             } 2007 Lovro Selic. `;
-        text += "     ENGINE, SPEECH, GRID, MAZE and GAME code by Lovro Selic using JavaScript. ";
+        text += "     ENGINE, SPEECH, GRID, MAZE, AI and GAME code by Lovro Selic using JavaScript. ";
         text = text.split("").join(String.fromCharCode(8202));
         return text;
     },
@@ -663,7 +663,7 @@ var GAME = {
             ENGINE.GAME.keymap[ENGINE.KEY.map.F4] = false;
         }
         if (map[ENGINE.KEY.map.F9]) {
-            DEBUG.finishLevel();
+            if (DEBUG.BUTTONS) DEBUG.finishLevel();
         }
         if (map[ENGINE.KEY.map.ctrl]) {
             HERO.splash();
