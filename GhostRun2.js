@@ -40,7 +40,7 @@ var INI = {
     LEVEL_FACTOR: 0.4,
 };
 var PRG = {
-    VERSION: "2.03",
+    VERSION: "2.04",
     NAME: "GhostRun II",
     YEAR: "2021",
     CSS: "color: #239AFF;",
