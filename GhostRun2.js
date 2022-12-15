@@ -40,7 +40,7 @@ var INI = {
     LEVEL_FACTOR: 0.4,
 };
 var PRG = {
-    VERSION: "2.04",
+    VERSION: "2.05",
     NAME: "GhostRun II",
     YEAR: "2021",
     CSS: "color: #239AFF;",
@@ -666,6 +666,7 @@ var GAME = {
             if (DEBUG.BUTTONS) DEBUG.finishLevel();
         }
         if (map[ENGINE.KEY.map.ctrl]) {
+            if (!VANISHING.map.vanishing_IA) return;
             HERO.splash();
             AUDIO.Splash.play();
             ENGINE.GAME.keymap[ENGINE.KEY.map.ctrl] = false;
