@@ -104,13 +104,13 @@ var AI = {
     );
 
     if (Astar === null) {
-      return this.immobile();
+      return this.immobile(enemy);
     }
     if (Astar === 0) {
       if (enemy.behaviour.complex("passive")) {
         enemy.behaviour.cycle("passive");
         enemy.behaviour.strategy = enemy.behaviour.getPassive();
-        return this.immobile();
+        return this.immobile(enemy);
       } else {
         //maybe obsolete
         return this.hunt(enemy);
@@ -153,7 +153,7 @@ var AI = {
         } else {
           enemy.behaviour.set("active", "hunt");
         }
-        return this.immobile();
+        return this.immobile(enemy);
       }
     } else {
       return this.keepTheDistance(enemy, ARG);
@@ -181,7 +181,7 @@ var AI = {
       return [possible.chooseRandom()];
     } else if (max.length > 0) {
       return [max.chooseRandom()];
-    } else return this.immobile();
+    } else return this.immobile(enemy);
   },
   shadower(enemy, ARG) {
     let directions = enemy.parent.map.GA.getDirectionsIfNot(

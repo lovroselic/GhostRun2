@@ -1,7 +1,7 @@
 //Assets for GhostRun2
 console.log("Assets for GhostRun2 ready.");
 
-var LoadTextures = [
+const LoadTextures = [
     "BrickWall.jpg", "BrickWall2.jpg", "BrickWall3.jpg", "BrickWall4.jpg", "BrickWall5.jpg", "BrickWall6.jpg", "BrickWall7.jpg",
     "BrokenRuin.jpg", "DungeonFloor.jpg", "DungeonFloor2.jpg", "DungeonWall.jpg", "DungeonWall2.jpg", "DungeonWall3.jpg",
     "Grass.jpg", "MorgueFloor.jpg", "CastleWall.jpg", "OldWall.jpg", "RockFloor.jpg", "SlateWall.jpg", "StoneFloor.jpg",
@@ -11,14 +11,14 @@ var LoadTextures = [
     "TlakFloor2b.jpg", "TlakFloor4b.jpg", "BlackWall.jpg", "BlackWall2.jpg", "WhiteCeramicWall.jpg", "WhiteCeramicWall2.jpg", "BlackBrickWall.jpg",
     "BlackBrickWall2.jpg", "GhostRun2_cover.jpg"
 ];
-var LoadSprites = [
+const LoadSprites = [
     { srcName: "goldBarSmall.png", name: "Gold" },
     "skull.png",
     { srcName: "green.png", name: "Splash" },
     { srcName: "goldBar.png", name: "GoldBarBig" }
 ];
-var LoadSequences = [];
-var LoadSheets = [
+const LoadSequences = [];
+const LoadSheets = [
     { srcName: "ghost1", type: "png", count: 4, name: "Ghosty" },
     { srcName: "gandalf", type: "png", count: 4, name: "Wizard" },
     { srcName: "skelly4", type: "png", count: 4, name: "ZombieGirl" },
@@ -34,10 +34,10 @@ var LoadSheets = [
     { srcName: "behemoth", type: "png", count: 4, name: "Behemoth" },
     { srcName: "zombie2", type: "png", count: 3, name: "Ghoul" },
 ];
-var LoadRotated = [];
-var LoadPacks = [];
-var LoadExtWasm = [];
-var LoadAudio = [
+const LoadRotated = [];
+const LoadPacks = [];
+const LoadExtWasm = [];
+const LoadAudio = [
     { srcName: "Explosion1.mp3", name: "Explosion" },
     { srcName: "Pick up gold.mp3", name: "Pick" },
     { srcName: "death.mp3", name: "Death" },
@@ -46,12 +46,13 @@ var LoadAudio = [
     { srcName: "Evil laughter.mp3", name: "EvilLaughter" },
     { srcName: "Determination - LaughingSkull.mp3", name: "Title" }
 ];
-var ExtendSheetTag = [];
-var LoadSheetSequences = [
+const ExtendSheetTag = [];
+const LoadSheetSequences = [
     { srcName: "Explosion2.png", name: "Explosion", type: "png", count: 23 }
 ];
-var LoadFonts = [
+const LoadFonts = [
     { srcName: "ArcadeClassic.ttf", name: "Arcade" },
     { srcName: "emulogic.ttf", name: "Emulogic" },
     { srcName: "Adore64.ttf", name: "Adore" }
 ];
+const LoadRotatedSheetSequences = [];

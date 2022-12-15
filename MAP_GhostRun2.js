@@ -200,9 +200,9 @@ var SPAWN = {
     gold(level) {
         let goldGrids = MAP[level].DUNGEON.poolOfGrids(INI.GOLD);
         for (let gold of goldGrids) {
-            GRID_SOLO_FLOOR_OBJECT.add(new Gold(gold));
+            FLOOR_OBJECT.add(new Gold(gold));
         }
-        GRID_SOLO_FLOOR_OBJECT.manage(MAP[level].DUNGEON);
+        FLOOR_OBJECT.manage(MAP[level].DUNGEON);
     },
     monsters(level) {
         ENEMY_TG.clearAll();

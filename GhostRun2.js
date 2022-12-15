@@ -24,8 +24,8 @@ var DEBUG = {
     invincible: false,
     INF_LIVES: false,
     finishLevel() {
-        GRID_SOLO_FLOOR_OBJECT.POOL.length = 1;
-        GRID_SOLO_FLOOR_OBJECT.manage();
+        FLOOR_OBJECT.POOL.length = 1;
+        FLOOR_OBJECT.manage();
         GAME.PAINT.gold();
     }
 };
@@ -40,7 +40,7 @@ var INI = {
     LEVEL_FACTOR: 0.4,
 };
 var PRG = {
-    VERSION: "2.00",
+    VERSION: "2.02",
     NAME: "GhostRun II",
     YEAR: "2021",
     CSS: "color: #239AFF;",
@@ -100,7 +100,7 @@ var PRG = {
         ENGINE.bottomWIDTH = 960;
         ENGINE.checkProximity = false;
         ENGINE.checkIntersection = false;
-        ENGINE.setCollisionsafe(49);
+
         $("#bottom").css(
             "margin-top",
             ENGINE.gameHEIGHT + ENGINE.titleHEIGHT + ENGINE.bottomHEIGHT
@@ -200,11 +200,11 @@ var HERO = {
         return dirs.chooseRandom();
     },
     touchGold() {
-        let IA = MAP[GAME.level].DUNGEON.grid_solo_floor_object_IA;
+        let IA = MAP[GAME.level].DUNGEON.floor_object_IA_1_1;
         let goldIndex = IA.unroll(HERO.moveState.homeGrid)[0];
         if (goldIndex) {
-            GRID_SOLO_FLOOR_OBJECT.remove(goldIndex);
-            GRID_SOLO_FLOOR_OBJECT.reIndexRequired = true;
+            FLOOR_OBJECT.remove(goldIndex);
+            FLOOR_OBJECT.reIndexRequired = true;
             GAME.score += INI.SCORE_GOLD;
             TITLE.score();
             GAME.PAINT.gold();
@@ -212,7 +212,7 @@ var HERO = {
             AUDIO.Pick.play();
         }
 
-        if (GRID_SOLO_FLOOR_OBJECT.size === 0) {
+        if (FLOOR_OBJECT.size === 0) {
             GAME.levelEnd();
         }
 
@@ -453,7 +453,7 @@ var GAME = {
     initLevel(level) {
         let randomDungeon = RAT_ARENA.create(MAP[level].width, MAP[level].height);
         MAP[level].DUNGEON = randomDungeon;
-        GRID_SOLO_FLOOR_OBJECT.init(MAP[level].DUNGEON);
+        FLOOR_OBJECT.init(MAP[level].DUNGEON);
         DESTRUCTION_ANIMATION.init(MAP[level].DUNGEON);
         SPAWN.gold(level);
         MAP[level].pw = MAP[level].width * ENGINE.INI.GRIDPIX;
@@ -465,7 +465,7 @@ var GAME = {
         VANISHING.init(MAP[level].DUNGEON);
         SPAWN.monsters(level);
         HERO.init();
-        HERO.energy = Math.max(Math.round(GRID_SOLO_FLOOR_OBJECT.size / INI.GOLD * MAP[GAME.level].energy), HERO.energy);
+        HERO.energy = Math.max(Math.round(FLOOR_OBJECT.size / INI.GOLD * MAP[GAME.level].energy), HERO.energy);
         GAME.levelExecute();
     },
     levelExecute() {
@@ -513,7 +513,7 @@ var GAME = {
         GAME.respond();
         HERO.move(lapsedTime);
         HERO.touchGold();
-        GRID_SOLO_FLOOR_OBJECT.manage();
+        FLOOR_OBJECT.manage();
         VANISHING.manage(lapsedTime);
         GAME.ENEMY.move(lapsedTime);
         GAME.ENEMY.collideSplash();
@@ -601,7 +601,7 @@ var GAME = {
     setTitle() {
         const text = GAME.generateTitleText();
         const RD = new RenderData("Adore", 16, "#0E0", "bottomText");
-        const SQ = new Square(0, 0, LAYER.bottomText.canvas.width, LAYER.bottomText.canvas.height);
+        const SQ = new RectArea(0, 0, LAYER.bottomText.canvas.width, LAYER.bottomText.canvas.height);
         GAME.movingText = new MovingText(text, 4, RD, SQ);
     },
     generateTitleText() {
@@ -720,7 +720,7 @@ var GAME = {
     PAINT: {
         gold() {
             ENGINE.clearLayer("gold");
-            GRID_SOLO_FLOOR_OBJECT.draw();
+            FLOOR_OBJECT.draw();
         },
         splash() {
             ENGINE.clearLayer("splash");
@@ -796,7 +796,8 @@ var TITLE = {
         ENGINE.GAME.ANIMATION.next(GAME.runTitle);
     },
     clearAllLayers() {
-        ENGINE.layersToClear = new Set(["text", "animation", "actors", "explosion", "sideback", "button", "score", "energy", "lives", "stage", "radar", "title"]);
+        ENGINE.layersToClear = new Set(["text", "animation", "actors", "explosion", "sideback", "button", "score",
+            "energy", "lives", "stage", "radar", "title", "splash"]);
         ENGINE.clearLayerStack();
     },
     blackBackgrounds() {
@@ -1050,9 +1051,9 @@ var TITLE = {
         CTX.shadowBlur = 0;
         var orx = pad + 1;
         var ory = y + 1;
-        
+
         //draw hero
-        CTX.fillStyle = "#00F"; 
+        CTX.fillStyle = "#00F";
         CTX.pixelAt(
             orx + HERO.moveState.homeGrid.x * INI.MINI_PIX,
             ory + HERO.moveState.homeGrid.y * INI.MINI_PIX,
@@ -1061,9 +1062,9 @@ var TITLE = {
 
         //draw gold
         CTX.fillStyle = "yellow";
-        for (let q = 0; q < GRID_SOLO_FLOOR_OBJECT.size; q++) {
-            if (GRID_SOLO_FLOOR_OBJECT.POOL[q] === null) continue;
-            let grid = GRID_SOLO_FLOOR_OBJECT.POOL[q].grid;
+        for (let q = 0; q < FLOOR_OBJECT.size; q++) {
+            if (FLOOR_OBJECT.POOL[q] === null) continue;
+            let grid = FLOOR_OBJECT.POOL[q].grid;
             CTX.pixelAt(
                 orx + grid.x * INI.MINI_PIX,
                 ory + grid.y * INI.MINI_PIX,
@@ -1149,7 +1150,7 @@ var TITLE = {
 // -- main --
 $(function () {
     PRG.INIT();
-    SPEECH.init();
+    SPEECH.init(1.0);
     PRG.setup();
     ENGINE.LOAD.preload();
     SCORE.init("SC", "GhostRun", 10, 2500);

@@ -1,6 +1,6 @@
 //////////////////speech.js/////////////////////////
 //                                                //
-//       SPEECH version 1.00  by LS               //
+//       SPEECH version 1.02  by LS               //
 //                                                //
 ////////////////////////////////////////////////////
 /*  
@@ -11,14 +11,14 @@ TODO:
 ////////////////////////////////////////////////////
 
 var SPEECH = {
-  VERSION: "1.00",
+  VERSION: "1.02",
   CSS: "color: #0A0",
   interval: 20,
   browserSupport: true,
   voices: null,
   voice: null,
   settings: null,
-  wait: function () {
+  wait() {
     if (!SPEECH.browserSupport) return;
     if (SPEECH.ready) {
       return;
@@ -27,41 +27,37 @@ var SPEECH = {
       setTimeout(SPEECH.wait, SPEECH.inteval);
     }
   },
-  init: function () {
+  init(rate = 0.5, pitch = 0.9, volume = 1) {
     if (!("speechSynthesis" in window)) {
       SPEECH.browserSupport = false;
-      console.log(
-        `%cInitializing SPEECH failed. Browser not supported!`,
-        "color: #F00"
-      );
+      console.log(`%cInitializing SPEECH failed. Browser not supported!`, "color: #F00");
       return;
     }
     let ready = Promise.all([SPEECH.getVoices()]).then(function () {
       SPEECH.ready = true;
       console.log(`%cSPEECH ${SPEECH.VERSION}: ready`, SPEECH.CSS);
-      SPEECH.voice = SPEECH.voices[0];
+      SPEECH.voice = SPEECH.voices[1];
     });
-    
-    let def = new VoiceSetting(1, 1, 1);
+
+    let def = new VoiceSetting(rate, pitch, volume);
     SPEECH.settings = def;
     SPEECH.wait();
   },
-  speak: function (txt) {
-    if (!SPEECH.ready){
+  speak(txt) {
+    if (!SPEECH.ready) {
       console.log(`%cSPEECH not ready ....`, "color: #A00");
       return;
     }
-    
+
     let msg = new SpeechSynthesisUtterance();
     msg.text = txt;
     msg.pitch = SPEECH.settings.pitch;
-    msg.rate = SPEECH.settings.pitch;
-    msg.volume = SPEECH.settings.pitch;
+    msg.rate = SPEECH.settings.rate;
+    msg.volume = SPEECH.settings.volume;
     msg.voice = SPEECH.voice;
-    //console.log("saying msg", msg);
     speechSynthesis.speak(msg);
   },
-  getVoices: function () {
+  getVoices() {
     if (navigator.userAgent.includes("Firefox")) {
       console.log(`%cInitializing SPEECH - Firefox`, SPEECH.CSS);
       return new Promise((resolve) => {
@@ -82,10 +78,7 @@ var SPEECH = {
       });
     } else {
       SPEECH.browserSupport = false;
-      console.log(
-        `%cInitializing SPEECH failed. Browser not supported!`,
-        "color: #F00"
-      );
+      console.log(`%cInitializing SPEECH failed. Browser not supported!`, "color: #F00");
     }
   },
   ready: false
