@@ -40,7 +40,7 @@ var INI = {
     LEVEL_FACTOR: 0.4,
 };
 var PRG = {
-    VERSION: "2.02",
+    VERSION: "2.03",
     NAME: "GhostRun II",
     YEAR: "2021",
     CSS: "color: #239AFF;",
@@ -370,7 +370,7 @@ class Monster {
                 let any = others.sum() !== 0;
                 if (any) {
                     for (let monsterId of others) {
-                        let monster = ENEMY_TG.get(monsterId);
+                        let monster = ENEMY_TG.show(monsterId);
                         if (monster.captured || monster.waiting) {
                             if (!monster.captured) {
                                 if (this.id < monster.id) {
