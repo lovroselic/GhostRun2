@@ -15,10 +15,10 @@ known bugs:
  */
 ////////////////////////////////////////////////////
 
-var DEBUG = {
+const DEBUG = {
     FPS: false,
     BUTTONS: false,
-    SETTING: false,
+    SETTING: true,
     VERBOSE: false,
     PAINT_TRAIL: false,
     invincible: false,
@@ -29,7 +29,7 @@ var DEBUG = {
         GAME.PAINT.gold();
     }
 };
-var INI = {
+const INI = {
     GOLD: 100,
     HERO_SPEED: 8,
     MINI_PIX: 3,
@@ -39,16 +39,16 @@ var INI = {
     LEVEL_BONUS: 1000,
     LEVEL_FACTOR: 0.4,
 };
-var PRG = {
-    VERSION: "2.05",
+const PRG = {
+    VERSION: "2.05.01",
     NAME: "GhostRun II",
     YEAR: "2021",
     CSS: "color: #239AFF;",
     INIT() {
         console.log("%c****************************", PRG.CSS);
-        console.log(`${PRG.NAME} ${PRG.VERSION} by Lovro Selic, (c) C00lSch00l ${PRG.YEAR} on ${navigator.userAgent}`);
+        console.log(`${PRG.NAME} ${PRG.VERSION} by Lovro Selic, (c) LaughingSkull ${PRG.YEAR} on ${navigator.userAgent}`);
         $("#title").html(PRG.NAME);
-        $("#version").html(`${PRG.NAME} V${PRG.VERSION} <span style='font-size:14px'>&copy</span> C00lSch00l ${PRG.YEAR}`);
+        $("#version").html(`${PRG.NAME} V${PRG.VERSION} <span style='font-size:14px'>&copy</span> LaughingSkull ${PRG.YEAR}`);
         $("input#toggleAbout").val("About " + PRG.NAME);
         $("#about fieldset legend").append(" " + PRG.NAME + " ");
 
@@ -60,34 +60,24 @@ var PRG = {
     },
     setup() {
         console.log("PRG.setup");
-        if (DEBUG.SETTING) {
-            $('#debug').show();
-        } else $('#debug').hide();
-        $("#gridsize").val(INI.GRIDSIZE);
-        $("#gridsize").change(GAME.resizeGrid);
+
         $("#engine_version").html(ENGINE.VERSION);
         $("#grid_version").html(GRID.VERSION);
         $("#maze_version").html(DUNGEON.VERSION);
         $("#ai_version").html(AI.VERSION);
         $("#lib_version").html(LIB.VERSION);
-
-
-        $("#walltexture").change(function () {
-            ENGINE.fill(LAYER.wallcanvas, TEXTURE[$("#walltexture")[0].value]);
-        });
-        $("#floortexture").change(function () {
-            ENGINE.fill(LAYER.floorcanvas, TEXTURE[$("#floortexture")[0].value]);
-        });
-        $("#ceilingtexture").change(function () {
-            ENGINE.fill(LAYER.ceilingcanvas, TEXTURE[$("#ceilingtexture")[0].value]);
-        });
-
+        $("#iam_version").html(IndexArrayManagers.VERSION);
+        $("#speech_version").html(SPEECH.VERSION);
 
         $("#toggleHelp").click(function () {
             $("#help").toggle(400);
         });
         $("#toggleAbout").click(function () {
             $("#about").toggle(400);
+        });
+
+        $("#toggleVersion").click(function () {
+            $("#debug").toggle(400);
         });
 
         //boxes
@@ -412,7 +402,7 @@ class Monster {
         }
     }
 }
-var GAME = {
+const GAME = {
     start() {
         console.log("GAME started");
         if (AUDIO.Title) {
@@ -573,25 +563,6 @@ var GAME = {
     setup() {
         console.log("GAME SETUP started");
 
-        for (var prop in TEXTURE) {
-            $("#walltexture").append(
-                "<option value='" + prop + "'>" + prop + "</option>"
-            );
-            $("#floortexture").append(
-                "<option value='" + prop + "'>" + prop + "</option>"
-            );
-            $("#ceilingtexture").append(
-                "<option value='" + prop + "'>" + prop + "</option>"
-            );
-        }
-        $("#walltexture").val("CastleWall");
-        $("#floortexture").val("RockFloor");
-        $("#ceilingtexture").val("MorgueFloor");
-        LAYER.wallcanvas = $("#wallcanvas")[0].getContext("2d");
-        LAYER.floorcanvas = $("#floorcanvas")[0].getContext("2d");
-        ENGINE.fill(LAYER.wallcanvas, TEXTURE[$("#walltexture")[0].value]);
-        ENGINE.fill(LAYER.floorcanvas, TEXTURE[$("#floortexture")[0].value]);
-
         $("#buttons").prepend("<input type='button' id='startGame' value='Start Game'>");
         $("#startGame").prop("disabled", true);
 
@@ -606,7 +577,7 @@ var GAME = {
     },
     generateTitleText() {
         let text = `${PRG.NAME} ${PRG.VERSION
-            }, a game by Lovro Selic, ${"\u00A9"} C00LSch00L ${PRG.YEAR
+            }, a game by Lovro Selic, ${"\u00A9"} LaughinhSkull ${PRG.YEAR
             }. Title screen graphics by Trina Selic. Music: 'Determination' written and performed by LaughingSkull, ${"\u00A9"
             } 2007 Lovro Selic. `;
         text += "     ENGINE, SPEECH, GRID, MAZE, AI and GAME code by Lovro Selic using JavaScript. ";
@@ -767,7 +738,7 @@ var GAME = {
         }
     }
 };
-var TITLE = {
+const TITLE = {
     firstFrame() {
         TITLE.clearAllLayers();
         TITLE.sideBackground();
@@ -1154,7 +1125,7 @@ $(function () {
     SPEECH.init(1.0);
     PRG.setup();
     ENGINE.LOAD.preload();
-    SCORE.init("SC", "GhostRun", 10, 2500);
+    SCORE.init("SC", "GhostRun", 15, 5000);
     SCORE.loadHS();
     SCORE.hiScore();
     SCORE.extraLife = [10000, 20000, 30000, 40000, 50000, 60000, 70000, 80000, 90000, 100000, Infinity];

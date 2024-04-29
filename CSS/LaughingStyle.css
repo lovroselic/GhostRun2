@@ -1,0 +1,464 @@
+/* LS CSS v0.4.3 */
+
+@charset "utf-8";
+
+@font-face {
+    font-family: 'LaughingSkull';
+    src: url("/Assets/Fonts/LS.ttf");
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Emulogic';
+    src: url("/Assets/Fonts/emulogic.ttf");
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Arcade';
+    src: url("/Assets/Fonts/Arcade Classic.ttf");
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Adore';
+    src: url("/Assets/Fonts/Adore64.ttf");
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Annie';
+    src: url("/Assets/Fonts/AnnieUseYourTelescope.ttf");
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'DeepDown';
+    src: url("/Assets/Fonts/DeepDown.ttf");
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Moria';
+    src: url("/Assets/Fonts/MoriaCitadel.ttf");
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "C64";
+    src: url("/Assets/Fonts/C64_Pro-STYLE.ttf");
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Carolingia";
+    src: url("/Assets/Fonts/carolingia.ttf");
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Alien";
+    src: url("/Assets/Fonts/CosmicAlien.ttf");
+    font-display: swap;
+}
+
+/* Overrriding Bootstrap */
+
+body {
+    background: linear-gradient(90deg,
+            #202020 0%,
+            #212121 20%,
+            #222222 40%,
+            #222222 60%,
+            #212121 80%,
+            #202020 100%);
+
+    background-image: url('/Images/DarkCloudyBackground3.webp') !important;
+    background-repeat: repeat;
+    font-family: "OpenSans", serif !important;
+}
+
+
+fieldset, legend {
+    all: revert;
+}
+
+body, td, tfoot, th, thead, tr {
+    border: none !important;
+}
+
+a, a:visited {
+    color: #DDE0DD;
+}
+
+/* LS theme */
+
+h1, h2 {
+    color: #FF0000;
+}
+
+.arcade {
+    font-family: Arcade;
+    font-size: 24px;
+}
+
+.c64 {
+    font-family: C64;
+    font-size: 15px;
+}
+
+.alien {
+    font-family: CosmicAlien;
+}
+
+.LS_radius {
+    border-radius: 0.25rem !important;
+}
+
+
+h3, h4, h5, h6, p, section, fieldset {
+    color: #DDE0DD;
+}
+
+p {
+    font-size: 1.2rem;
+}
+
+.terminal {
+    color: #00FF00;
+}
+
+.warning {
+    color: gold;
+    font-weight: bold;
+}
+
+textarea, select, input {
+    background: beige;
+    border-radius: 5px;
+}
+
+input[type="button"] {
+    background-color: #d9d9b3;
+    padding: 6px;
+}
+
+button {
+    background-color: #d9d9b3;
+    padding: 6px;
+    margin: 0.6rem;
+    border-radius: 5px;
+}
+
+input {
+    margin: 5px;
+}
+
+.crimson-hr {
+    border: 0;
+    height: 2px;
+    background-color: #C0C0C0;
+    margin: 10px 0;
+    box-shadow: 0 2px 3px#000;
+    border-radius: 1px;
+}
+
+.svg-icon {
+    height: 2rem;
+    width: auto;
+}
+
+.asset_select {
+    height: 2.5rem;
+    /*margin-top: 8px;*/
+}
+
+/*  navigation specifics */
+
+.nav_back {
+    background: #5E0A1B;
+    background-image: url('/Images/MarbleBackground.webp') !important;
+    background-repeat: repeat;
+    color: #fff !important;
+    box-shadow: 1px 1px #5E0A1B;
+}
+
+.bright-white {
+    color: #FFFFFF;
+    text-shadow: 1px 1px 2px #000;
+    font-family: 'OpenSans', 'serif';
+    font-weight: 600;
+    font-size: 1.5rem;
+}
+
+.crimson-red {
+    color: #FF0000;
+    text-shadow: 1px 1px 2px #000;
+    font-family: 'LaughingSkull', Times, serif;
+    font-size: 3rem;
+}
+
+a.crimson-red:visited {
+    color: #FF0000;
+}
+
+label {
+    color: #fff;
+}
+
+/* changing bootstrap*/
+
+a.navbar-brand:hover {
+    color: #DC143C !important;
+}
+
+.dropdown a:hover {
+    background-color: transparent !important;
+    color: #B0B0B0 !important;
+    text-shadow: 1px 1px 2px #000 !important;
+}
+
+a.nav-link.bright-white:hover {
+    background-color: transparent !important;
+    color: #B0B0B0 !important;
+    text-shadow: 1px 1px 2px #000 !important;
+}
+
+/* LaughingSkull classes */
+
+.white_text {
+    color: white;
+}
+
+.LS_title {
+    font-family: LaughingSkull;
+    font-weight: 300;
+    font-size: 96px;
+    letter-spacing: 2px;
+    text-shadow: 1px 1px #666;
+    color: #FF0000;
+}
+
+.games {
+    font-family: Arcade;
+    color: #FF0000;
+    text-shadow: 1px 1px #666;
+}
+
+.game_start_btn {
+    border-radius: 13px;
+    border: #666 1px solid;
+    box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.3) !important;
+    display: inline-block;
+    background-color: #DDE0DD;
+    padding: 10px 8px;
+    color: #111 !important;
+    text-align: center;
+    text-decoration: none;
+    transition: background-color 0.3s;
+    cursor: pointer;
+    width: 75%;
+}
+
+.game_start_btn:hover, .game_start_btn:focus {
+    background-color: #AAA;
+    color: black;
+    text-decoration: none;
+}
+
+/* old LS music page classes */
+
+.albumlink {
+    text-decoration: none;
+    color: white;
+    font-family: Carolingia;
+    text-align: center;
+}
+
+.albumlink:hover {
+    text-decoration: none;
+    color: white;
+}
+
+.albumList {
+    table-layout: fixed;
+    text-align: left;
+    color: whitesmoke;
+}
+
+.albumList td {
+    font-size: 1.4rem;
+}
+
+.albumList td:nth-child(2) {
+    font-family: Carolingia;
+}
+
+.disco img {
+    border: 1px solid #222;
+}
+
+/* Games compatibility and specifics */
+
+.win_black {
+    background: linear-gradient(90deg, #000, #222);
+    border-radius: 13px;
+}
+
+.custom-boundary {
+    margin-left: auto;
+    margin-right: auto;
+    max-width: calc(100% - 3rem);
+    /* Adjust the 2rem value as needed to increase/decrease the boundary */
+}
+
+
+.win {
+    background: #222;
+    border: 2px #AAA ridge;
+    border-radius: 7px !important;
+    padding: 20px;
+}
+
+.winTrans {
+    width: 960px;
+    margin: auto;
+    margin-top: 20px;
+    padding: 20px 32px 32px;
+    box-sizing: content-box;
+}
+
+.layer {
+    position: absolute;
+    left: 0;
+}
+
+#hiscore {
+    border: 1px dotted #888;
+    border-radius: 13px;
+    padding: 20px;
+    box-shadow: 1px 1px 2px 2px #333;
+    font-family: "Courier New", Courier, monospace;
+    font-size: 0.9rem;
+    white-space: pre;
+}
+
+
+.gw {
+    float: left;
+}
+
+.gh {
+    float: none;
+    clear: both;
+}
+
+.setup_container {
+    padding: 10px;
+    float: left;
+    margin: 12px;
+}
+
+.hidden {
+    display: none;
+}
+
+.version, p.version a, p.version a:visited {
+    font-family: Consolas, serif !important;
+    font-size: 0.7rem !important;
+    color: #00FF00 !important;
+}
+
+.version_big {
+    font-family: Consolas, serif !important;
+    font-size: 1rem !important;
+    color: #00FF00;
+}
+
+.section {
+    display: none;
+    font-family: Consolas, serif !important;
+    font-size: 0.7rem !important;
+}
+
+fieldset {
+    border: 2px #AAA ridge;
+    border-radius: 7px !important;
+    padding: 20px;
+    background: #2a2a2a;
+}
+
+fieldset p {
+    font-size: 0.7rem !important;
+}
+
+fieldset legend {
+    font-size: 0.7rem !important;
+}
+
+#gameResolutionAlert {
+    width: 95%;
+    background: #ff0000;
+    margin: auto;
+    margin-top: 12px;
+    padding: 8px;
+    border: 1px solid black;
+    border-radius: 4px;
+}
+
+/********** ExtraLarge devices only **********/
+
+@media (min-width: 1200px) {
+    .hide_extraLarge {
+        display: none;
+    }
+}
+
+/********** Large devices only **********/
+
+@media (min-width: 1048px) and (max-width: 1199px) {
+    .hide_large {
+        display: none;
+    }
+}
+
+/********** Medium devices only **********/
+@media (min-width: 992px) and (max-width: 1047px) {
+    .hide_medium {
+        display: none;
+    }
+}
+
+/********** XS devices only **********/
+
+@media (max-width: 576px) {
+    .force_width {
+        width: 90%;
+    }
+
+    .row {
+        margin-left: 0px !important;
+        margin-right: 0px !important;
+    }
+}
+
+/* game specific styles */
+
+.CCC {
+    font-family: 'Annie';
+    font-size: 1.5em;
+    text-shadow: 1px 1px #666;
+}
+
+.CCC h2 {
+    font-weight: bold;
+    font-size: 2.5em;
+}
+
+h2.CM2 {
+    font-family: 'Moria' !important;
+}
+
+h2.INV {
+    font-family: 'Alien' !important;
+}
