@@ -40,7 +40,7 @@ const INI = {
     LEVEL_FACTOR: 0.4,
 };
 const PRG = {
-    VERSION: "2.05.03",
+    VERSION: "2.05.04",
     NAME: "GhostRun II",
     YEAR: "2021",
     CSS: "color: #239AFF;",
