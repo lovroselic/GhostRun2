@@ -40,7 +40,7 @@ const INI = {
     LEVEL_FACTOR: 0.4,
 };
 const PRG = {
-    VERSION: "2.05.05",
+    VERSION: "2.05.07",
     NAME: "GhostRun II",
     YEAR: "2021",
     CSS: "color: #239AFF;",
@@ -758,7 +758,7 @@ const TITLE = {
         TITLE.clearAllLayers();
         TITLE.blackBackgrounds();
         TITLE.titlePlot();
-        ENGINE.draw("background", ENGINE.gameWIDTH - TEXTURE.Title.width , Math.floor((ENGINE.gameHEIGHT - TEXTURE.Title.height) / 2), TEXTURE.Title);
+        ENGINE.draw("background", ENGINE.gameWIDTH - TEXTURE.Title.width , Math.floor((ENGINE.gameHEIGHT - TEXTURE.Title.height) / 2) - 50, TEXTURE.Title);
         $("#DOWN")[0].scrollIntoView();
 
         ENGINE.topCanvas = ENGINE.getCanvasName("ROOM");
