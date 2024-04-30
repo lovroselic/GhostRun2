@@ -2,23 +2,30 @@
 console.log("Assets for GhostRun2 ready.");
 
 LoadTextures = [
-    "BrickWall.jpg", "BrickWall2.jpg", "BrickWall3.jpg", "BrickWall4.jpg", "BrickWall5.jpg", "BrickWall6.jpg", "BrickWall7.jpg",
-    "BrokenRuin.jpg", "DungeonFloor.jpg", "DungeonFloor2.jpg", "DungeonWall.jpg", "DungeonWall2.jpg", "DungeonWall3.jpg",
-    "Grass.jpg", "MorgueFloor.jpg", "CastleWall.jpg", "OldWall.jpg", "RockFloor.jpg", "SlateWall.jpg", "StoneFloor.jpg",
-    "StoneFloor2.jpg", "StoneFloor3.jpg", "StoneFloor4.jpg", "StoneFloor5.jpg", "StoneWall.jpg", "StoneWall2.jpg", "StoneWall3.jpg",
-    "StoneWall3b.jpg", "StoneWall4.jpg", "StoneWall5.jpg", "ThatchFloor.jpg", "WhiteWall.jpg", "YellowBrick.jpg", "LavaWall.jpg",
-    "LavaWall2.jpg", "TileFloor.jpg", "RockWall.jpg", "TlakFloor.jpg", "TlakFloor2.jpg", "TlakFloor3.jpg", "TlakFloor4.jpg",
-    "TlakFloor2b.jpg", "TlakFloor4b.jpg", "BlackWall.jpg", "BlackWall2.jpg", "WhiteCeramicWall.jpg", "WhiteCeramicWall2.jpg", "BlackBrickWall.jpg",
-    "BlackBrickWall2.jpg", 
+    { srcName: "Wall/BlackBrickWall2.jpg", name: "BlackBrickWall2" },
+    { srcName: "Wall/BrickWall4.jpg", name: "BrickWall4" },
+    { srcName: "Wall/BrokenRuin.jpg", name: "BrokenRuin" },
+    { srcName: "Wall/DungeonFloor2.jpg", name: "DungeonFloor2" },
+    { srcName: "Wall/DungeonWall.jpg", name: "DungeonWall" },
+    { srcName: "Wall/DungeonWall2.jpg", name: "DungeonWall2" },
+    { srcName: "Wall/RockFloor.jpg", name: "RockFloor" },
+    { srcName: "Wall/RockWall.jpg", name: "RockWall" },
+    { srcName: "Wall/StoneFloor.jpg", name: "StoneFloor" },
+    { srcName: "Wall/StoneFloor3.jpg", name: "StoneFloor3" },
+    { srcName: "Wall/StoneFloor5.jpg", name: "StoneFloor5" },
+    { srcName: "Wall/StoneWall.jpg", name: "StoneWall" },
+    { srcName: "Wall/TileFloor.jpg", name: "TileFloor" },
+    { srcName: "Wall/TlakFloor2b.jpg", name: "TlakFloor2b" },
+    { srcName: "Wall/TlakFloor4b.jpg", name: "TlakFloor4b" },
 
-
+    //title
     { srcName: "Title/GhostRun576.jpg", name: "Title" },
 ];
 LoadSprites = [
-    { srcName: "goldBarSmall.png", name: "Gold" },
-    "skull.png",
-    { srcName: "green.png", name: "Splash" },
-    { srcName: "goldBar.png", name: "GoldBarBig" }
+    { srcName: "Items/goldBarSmall.png", name: "Gold" },
+    { srcName: "Items/skull.png", name: "skull" },
+    { srcName: "Items/green.png", name: "Splash" },
+    { srcName: "Items/goldBar.png", name: "GoldBarBig" }
 ];
 
 LoadSheets = [
@@ -52,7 +59,7 @@ LoadSheetSequences = [
     { srcName: "Explosion2.png", name: "Explosion", type: "png", count: 23 }
 ];
 LoadFonts = [
-    { srcName: "ArcadeClassic.ttf", name: "Arcade" },
+    { srcName: "Arcade Classic.ttf", name: "Arcade" },
     { srcName: "emulogic.ttf", name: "Emulogic" },
     { srcName: "Adore64.ttf", name: "Adore" }
 ];

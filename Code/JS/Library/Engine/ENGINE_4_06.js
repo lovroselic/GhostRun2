@@ -19,7 +19,7 @@ var LoadTextures = null;
 var LoadSprites = null;
 var LoadSequences = null;
 var LoadSheets = null;
-var ExtendSheetTag = null;
+var ExtendSheetTag = [];
 var LoadPacks = null;
 var LoadRotated = null;
 var LoadExtWasm = null;
@@ -43,7 +43,7 @@ const DownRight = new Vector(1, 1);
 const DownLeft = new Vector(-1, 1);
 
 const ENGINE = {
-  VERSION: "4.05",
+  VERSION: "4.06",
   CSS: "color: #0FA",
   INI: {
     ANIMATION_INTERVAL: 16,
@@ -77,6 +77,7 @@ const ENGINE = {
   SPRITE_SOURCE: "/Assets/Graphics/Sprites/",
   ROTATED_SPRITE_SOURCE: "/Assets/Graphics/Sprites/Rotated/",
   SHEET_SQUENCE_SOURCE: "/Assets/Graphics/SheetSequences/",
+  SHEETS_SOURCE: "/Assets/Graphics/Sheets/",
   ROTATED_SHEET_SQUENCE_SOURCE: "/Assets/Graphics/RotatedSheetSequences/",
   PACK_SOURCE: "/Assets/Graphics/Packs/",
   WASM_SOURCE: "/Assets/WASM/",
@@ -1403,7 +1404,7 @@ const ENGINE = {
 
           ENGINE.LOAD.HMSheets = toLoad.length;
           if (ENGINE.LOAD.HMSheets) appendCanvas("Sheets");
-          const sheets = await Promise.all(toLoad.map((img) => loadImage(img, "Sheets")));
+          const sheets = await Promise.all(toLoad.map((img) => loadImage(img, "Sheets", ENGINE.SHEETS_SOURCE)));
           for (const el of sheets) {
             ENGINE.sheetToSprite(el);
           }
