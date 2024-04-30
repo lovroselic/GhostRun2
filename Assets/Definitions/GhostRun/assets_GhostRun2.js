@@ -1,7 +1,7 @@
 //Assets for GhostRun2
 console.log("Assets for GhostRun2 ready.");
 
-const LoadTextures = [
+LoadTextures = [
     "BrickWall.jpg", "BrickWall2.jpg", "BrickWall3.jpg", "BrickWall4.jpg", "BrickWall5.jpg", "BrickWall6.jpg", "BrickWall7.jpg",
     "BrokenRuin.jpg", "DungeonFloor.jpg", "DungeonFloor2.jpg", "DungeonWall.jpg", "DungeonWall2.jpg", "DungeonWall3.jpg",
     "Grass.jpg", "MorgueFloor.jpg", "CastleWall.jpg", "OldWall.jpg", "RockFloor.jpg", "SlateWall.jpg", "StoneFloor.jpg",
@@ -9,16 +9,19 @@ const LoadTextures = [
     "StoneWall3b.jpg", "StoneWall4.jpg", "StoneWall5.jpg", "ThatchFloor.jpg", "WhiteWall.jpg", "YellowBrick.jpg", "LavaWall.jpg",
     "LavaWall2.jpg", "TileFloor.jpg", "RockWall.jpg", "TlakFloor.jpg", "TlakFloor2.jpg", "TlakFloor3.jpg", "TlakFloor4.jpg",
     "TlakFloor2b.jpg", "TlakFloor4b.jpg", "BlackWall.jpg", "BlackWall2.jpg", "WhiteCeramicWall.jpg", "WhiteCeramicWall2.jpg", "BlackBrickWall.jpg",
-    "BlackBrickWall2.jpg", "GhostRun2_cover.jpg"
+    "BlackBrickWall2.jpg", 
+
+
+    { srcName: "Title/GhostRun576.jpg", name: "Title" },
 ];
-const LoadSprites = [
+LoadSprites = [
     { srcName: "goldBarSmall.png", name: "Gold" },
     "skull.png",
     { srcName: "green.png", name: "Splash" },
     { srcName: "goldBar.png", name: "GoldBarBig" }
 ];
-const LoadSequences = [];
-const LoadSheets = [
+
+LoadSheets = [
     { srcName: "ghost1", type: "png", count: 4, name: "Ghosty" },
     { srcName: "gandalf", type: "png", count: 4, name: "Wizard" },
     { srcName: "skelly4", type: "png", count: 4, name: "ZombieGirl" },
@@ -34,10 +37,8 @@ const LoadSheets = [
     { srcName: "behemoth", type: "png", count: 4, name: "Behemoth" },
     { srcName: "zombie2", type: "png", count: 3, name: "Ghoul" },
 ];
-const LoadRotated = [];
-const LoadPacks = [];
-const LoadExtWasm = [];
-const LoadAudio = [
+
+LoadAudio = [
     { srcName: "Explosion1.mp3", name: "Explosion" },
     { srcName: "Pick up gold.mp3", name: "Pick" },
     { srcName: "death.mp3", name: "Death" },
@@ -46,13 +47,12 @@ const LoadAudio = [
     { srcName: "Evil laughter.mp3", name: "EvilLaughter" },
     { srcName: "Determination - LaughingSkull.mp3", name: "Title" }
 ];
-const ExtendSheetTag = [];
-const LoadSheetSequences = [
+
+LoadSheetSequences = [
     { srcName: "Explosion2.png", name: "Explosion", type: "png", count: 23 }
 ];
-const LoadFonts = [
+LoadFonts = [
     { srcName: "ArcadeClassic.ttf", name: "Arcade" },
     { srcName: "emulogic.ttf", name: "Emulogic" },
     { srcName: "Adore64.ttf", name: "Adore" }
 ];
-const LoadRotatedSheetSequences = [];
