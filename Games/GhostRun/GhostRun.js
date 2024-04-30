@@ -8,7 +8,7 @@
 /*
       
 TODO:
-    --expand m/m collision resolution
+    
 
 known bugs: 
 
@@ -40,7 +40,7 @@ const INI = {
     LEVEL_FACTOR: 0.4,
 };
 const PRG = {
-    VERSION: "2.05.01",
+    VERSION: "2.05.02",
     NAME: "GhostRun II",
     YEAR: "2021",
     CSS: "color: #239AFF;",
@@ -578,7 +578,7 @@ const GAME = {
     generateTitleText() {
         let text = `${PRG.NAME} ${PRG.VERSION
             }, a game by Lovro Selic, ${"\u00A9"} LaughinhSkull ${PRG.YEAR
-            }. Title screen graphics by Trina Selic. Music: 'Determination' written and performed by LaughingSkull, ${"\u00A9"
+            }. Music: 'Determination' written and performed by LaughingSkull, ${"\u00A9"
             } 2007 Lovro Selic. `;
         text += "     ENGINE, SPEECH, GRID, MAZE, AI and GAME code by Lovro Selic using JavaScript. ";
         text = text.split("").join(String.fromCharCode(8202));

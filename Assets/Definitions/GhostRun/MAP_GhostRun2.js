@@ -1,6 +1,6 @@
 console.log("%cMAP for GhostRun2 loaded.", "color: #888");
 
-var MONSTER = {
+const MONSTER = {
     Ghosty: {
         speed: 8,
         ai: 'follower',
@@ -98,7 +98,7 @@ var MONSTER = {
         tolerance: 0
     },
 };
-var MAP = {
+const MAP = {
     createNewLevel(level) {
         if (!MAP.hasOwnProperty(level)) {
             MAP[level] = $.extend(true, {}, MAP['10']);
@@ -196,7 +196,7 @@ var MAP = {
     }
 };
 
-var SPAWN = {
+const SPAWN = {
     gold(level) {
         let goldGrids = MAP[level].DUNGEON.poolOfGrids(INI.GOLD);
         for (let gold of goldGrids) {

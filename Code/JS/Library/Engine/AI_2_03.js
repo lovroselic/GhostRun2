@@ -26,7 +26,7 @@ knownBugs:
 /////////////////////////////////////////
 
 const AI = {
-  VERSION: "2.02",
+  VERSION: "2.03",
   CSS: "color: silver",
   VERBOSE: false,
   INI: {
@@ -68,7 +68,7 @@ const AI = {
     return [NOWAY];
   },
   hunt(enemy, exactPosition) {
-    if (exactPosition.hasOwnProperty("exactPlayerPosition")) exactPosition = exactPosition.exactPlayerPosition;
+    if (exactPosition?.hasOwnProperty("exactPlayerPosition")) exactPosition = exactPosition.exactPlayerPosition;
     let nodeMap = enemy.parent.map.GA.nodeMap;
     let grid = this.getPosition(enemy);
     let goto = nodeMap[grid.x][grid.y]?.goto || NOWAY;
