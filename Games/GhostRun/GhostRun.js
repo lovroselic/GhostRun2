@@ -124,7 +124,7 @@ const PRG = {
         TITLE.startTitle();
     }
 };
-var HERO = {
+const HERO = {
     startInit() {
         HERO.spriteClass = "Wizard";
         HERO.asset = ASSET[HERO.spriteClass];
